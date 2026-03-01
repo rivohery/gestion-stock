@@ -1,0 +1,149 @@
+@if(orderDetailLoading()){
+<app-loader></app-loader>
+} @else {
+<div class="flex flex-col gap-4">
+  <app-message-box
+    [message]="errorMsg()"
+    [type]="'error'"
+    *ngIf="errorMsg()"
+    (closeEvent)="closeMsgBox()"
+  ></app-message-box>
+  <div
+    class="bg-gray-100 min-h-screen flex items-center justify-center p-4"
+    *ngIf="billOrderDetails"
+  >
+    <div class="bg-white shadow-xl rounded-lg w-full max-w-4xl overflow-hidden">
+      <div class="p-6 text-gray-600 text-center">
+        <h1 class="text-2xl font-bold tracking-wide">Details de la commande</h1>
+      </div>
+
+      <div class="p-6 md:p-10">
+        <div class="space-y-4 max-w-2xl mx-auto">
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600">Numéro de facture :</span>
+            <span class="text-gray-900 font-medium"
+              >#FAC-{{ billOrderDetails.invoiceNo }}</span
+            >
+          </div>
+
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600"
+              >Date de la création :</span
+            >
+            <span class="text-gray-900 font-medium">{{
+              billOrderDetails.createdDate | date : "fullDate"
+            }}</span>
+          </div>
+
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600">Créé par :</span>
+            <span class="text-gray-900 font-medium">{{
+              billOrderDetails.employee
+            }}</span>
+          </div>
+
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600">Nom du client :</span>
+            <span class="text-gray-900 font-medium">{{
+              billOrderDetails.customer
+            }}</span>
+          </div>
+
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600">Tél :</span>
+            <span class="text-gray-900 font-medium">{{
+              billOrderDetails.phoneNu
+            }}</span>
+          </div>
+
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600">Email :</span>
+            <span class="text-gray-900 font-medium">{{
+              billOrderDetails.email
+            }}</span>
+          </div>
+
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600">Payment :</span>
+            <span class="text-gray-900 font-medium">{{
+              billOrderDetails.paymentMethod
+            }}</span>
+          </div>
+
+          <div class="flex justify-between border-b pb-2">
+            <span class="font-semibold text-gray-600">Montant Total :</span>
+            <span class="text-2xl font-bold text-blue-600">{{
+              billOrderDetails.total | currency : "EUR"
+            }}</span>
+          </div>
+        </div>
+
+        <div class="mt-12">
+          <h3
+            class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-blue-600 pl-2"
+          >
+            Détails de la commande
+          </h3>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b">
+                  <th class="py-3 px-4 font-semibold text-gray-700">Produit</th>
+                  <th class="py-3 px-4 font-semibold text-gray-700 text-center">
+                    Prix de vente
+                  </th>
+                  <th class="py-3 px-4 font-semibold text-gray-700 text-center">
+                    Quantité
+                  </th>
+                  <th class="py-3 px-4 font-semibold text-gray-700 text-right">
+                    Sous-total
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                @for(item of billOrderDetails.items;track item.itemName){
+                <tr>
+                  <td class="py-4 px-4 text-gray-800">
+                    {{ item.itemName }}
+                  </td>
+                  <td class="py-4 px-4 text-center">
+                    {{ item.salesPrice | currency : "EUR" }}
+                  </td>
+                  <td class="py-4 px-4 text-center">{{ item.quantity }}</td>
+                  <td class="py-4 px-4 text-right font-medium">
+                    {{ item.totalItems | currency : "EUR" }}
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-10 flex justify-center items-center gap-4">
+          <a
+            routerLink="/stock/bill-order/new"
+            class="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-8 rounded transition duration-200"
+          >
+            Nouvelle commande
+          </a>
+          <a
+            routerLink="/stock/bill-order/list"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded transition duration-200"
+          >
+            Listes commandes
+          </a>
+          <button
+            class="bg-amber-500 hover:bg-amber-700 text-white font-bold py-2 px-8 rounded transition duration-200"
+            (click)="getInvoicePdf()"
+            [disabled]="invoiceLoading()"
+          >
+            Genérer facture
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

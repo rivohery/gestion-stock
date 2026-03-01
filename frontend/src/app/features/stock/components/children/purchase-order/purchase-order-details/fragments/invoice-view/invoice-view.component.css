@@ -1,0 +1,287 @@
+/* Conteneur Principal */
+.container-facture {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header & Bouton */
+.actions-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.btn-download {
+  background-color: #2563eb;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.btn-download:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.05);
+}
+
+.btn-text {
+  font-weight: bold;
+}
+
+/* Corps de la Facture */
+.facture-body {
+  background-color: white;
+  padding: 40px;
+  color: #1f2937;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.facture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #2563eb;
+  padding-bottom: 30px;
+  margin-bottom: 30px;
+}
+
+.company-name {
+  color: #2563eb;
+  font-size: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.company-details {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.invoice-title {
+  font-size: 36px;
+  font-weight: 300;
+  color: #9ca3af;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.invoice-subtitle {
+  font-weight: bold;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* Grille d'infos */
+.billing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.section-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.supplier-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+}
+
+.supplier-sub {
+  font-size: 14px;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.invoice-meta {
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.meta-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+}
+.meta-value {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Statut */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-bottom: 32px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Couleurs des badges */
+.pending {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.confirmed {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+.cancelled {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+.delivered {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.prepared-by {
+  margin-left: auto;
+  font-size: 14px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Table */
+.facture-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 40px;
+}
+
+.facture-table thead tr {
+  background-color: #2563eb;
+  color: white;
+}
+
+.facture-table th {
+  padding: 12px 16px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.facture-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Alignements */
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.font-bold {
+  font-weight: bold;
+}
+.font-medium {
+  font-weight: 500;
+}
+
+/* Totaux */
+.totals-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.totals-box {
+  width: 36.33%;
+  margin-right: 10px;
+}
+
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.subtotal-row .label {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.grand-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.grand-total-row .label {
+  color: #4b5563;
+  font-weight: 800;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+.grand-total-row .value {
+  margin-left: 15px;
+  color: #2563eb;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+/* Footer */
+.facture-footer {
+  margin-top: 80px;
+  padding-top: 30px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.footer-note {
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* Utilitaires PDF */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,238 @@
+<div class="p-2 lg:p-4 mt-6 bg-gray-100 h-screen">
+  <ul class="space-y-2">
+    <!-- Dashboard -->
+    <li *ngIf="isAdmin">
+      <a
+        routerLink="/stock/admin/dashboard"
+        class="flex items-center p-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+      >
+        <span class="material-icons mr-0 lg:mr-3 flex-shrink-0">dashboard</span>
+        <span [class]="menuTextClasses">Dashboard</span>
+      </a>
+    </li>
+
+    <!-- Articles avec sous-menus -->
+    <li class="dropdown-item" appDropdown *ngIf="isAdmin">
+      <button
+        class="flex items-center justify-between w-full p-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+      >
+        <div class="flex items-center">
+          <span class="material-icons mr-0 lg:mr-3 flex-shrink-0"
+            >category</span
+          >
+          <span [class]="menuTextClasses">Articles</span>
+        </div>
+        <span
+          class="material-icons dropdown-arrow text-sm hidden lg:block opacity-0 lg:opacity-100"
+          >chevron_right</span
+        >
+      </button>
+      <div class="dropdown-transition ml-0 lg:ml-6 mt-1 max-h-0">
+        <ul class="space-y-1">
+          <li>
+            <a
+              routerLink="/stock/admin/categories"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >folder</span
+              >
+              <span [class]="menuTextClasses">Catégories</span>
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/stock/admin/suppliers"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >local_shipping</span
+              >
+              <span [class]="menuTextClasses">Fournisseurs</span>
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/stock/admin/products"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >list_alt</span
+              >
+              <span [class]="menuTextClasses">Liste des articles</span>
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/stock/admin/new-product"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >add_circle</span
+              >
+              <span [class]="menuTextClasses">Ajouter un article</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+    <!-- Stock manage-->
+    <li *ngIf="isStockManager">
+      <a
+        routerLink="/stock/manage"
+        class="flex items-center p-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+      >
+        <span class="material-icons mr-0 lg:mr-3 flex-shrink-0"
+          >inventory_2</span
+        >
+        <span [class]="menuTextClasses">Stock</span>
+      </a>
+    </li>
+
+    <!-- Commande client avec sous-menus -->
+    <li class="dropdown-item" appDropdown *ngIf="isSalesManager">
+      <button
+        class="flex items-center justify-between w-full p-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+      >
+        <div class="flex items-center">
+          <span class="material-icons mr-0 lg:mr-3 flex-shrink-0"
+            >shopping_cart</span
+          >
+          <span [class]="menuTextClasses">Ventes</span>
+        </div>
+        <span
+          class="material-icons dropdown-arrow text-sm hidden lg:block opacity-0 lg:opacity-100"
+          >chevron_right</span
+        >
+      </button>
+      <div class="dropdown-transition ml-0 lg:ml-6 mt-1 max-h-0">
+        <ul class="space-y-1">
+          <li>
+            <a
+              routerLink="/stock/bill-order/list"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >list</span
+              >
+              <span [class]="menuTextClasses">Liste des commandes</span>
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/stock/bill-order/new"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >add</span
+              >
+              <span [class]="menuTextClasses">Nouvelle commande</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+    <!-- Commande fournisseur avec sous-menus -->
+    <li class="dropdown-item" appDropdown *ngIf="isStockManager">
+      <button
+        class="flex items-center justify-between w-full p-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+      >
+        <div class="flex items-center">
+          <span class="material-icons mr-0 lg:mr-3 flex-shrink-0"
+            >local_shipping</span
+          >
+          <span [class]="menuTextClasses">Commande fournisseur</span>
+        </div>
+        <span
+          class="material-icons dropdown-arrow text-sm hidden lg:block opacity-0 lg:opacity-100"
+          >chevron_right</span
+        >
+      </button>
+      <div class="dropdown-transition ml-0 lg:ml-6 mt-1 max-h-0">
+        <ul class="space-y-1">
+          <li>
+            <a
+              routerLink="/stock/purchase-order/list"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >list</span
+              >
+              <span [class]="menuTextClasses">Liste des commandes</span>
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/stock/purchase-order/new"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >add</span
+              >
+              <span [class]="menuTextClasses">Nouvelle commande</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+    <!-- Rapports -->
+    <li *ngIf="isAdmin">
+      <a
+        routerLink="/stock/admin/movement-stock"
+        class="flex items-center p-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+      >
+        <span class="material-icons mr-0 lg:mr-3 flex-shrink-0"
+          >assessment</span
+        >
+        <span [class]="menuTextClasses">Rapports</span>
+      </a>
+    </li>
+
+    <!-- Paramètres -->
+    <li class="dropdown-item" appDropdown>
+      <button
+        class="flex items-center justify-between w-full p-2 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+      >
+        <div class="flex items-center">
+          <span class="material-icons mr-0 lg:mr-3 flex-shrink-0"
+            >settings</span
+          >
+          <span [class]="menuTextClasses">Paramètres</span>
+        </div>
+        <span
+          class="material-icons dropdown-arrow text-sm hidden lg:block opacity-0 lg:opacity-100"
+          >chevron_right</span
+        >
+      </button>
+      <div class="dropdown-transition ml-0 lg:ml-6 mt-1 max-h-0">
+        <ul class="space-y-1">
+          <li *ngIf="isAdmin">
+            <a
+              routerLink="/stock/user/list"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >list</span
+              >
+              <span [class]="menuTextClasses">Utilisateurs</span>
+            </a>
+          </li>
+          <li *ngIf="isViewer">
+            <a
+              routerLink="/stock/user/profile"
+              class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-blue-50 hover:text-blue-600 group"
+            >
+              <span class="material-icons mr-0 lg:mr-3 text-sm flex-shrink-0"
+                >infos</span
+              >
+              <span [class]="menuTextClasses">Profile</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,115 @@
+@if(loading()){
+<app-loader></app-loader>
+} @else {
+<div class="flex flex-col gap-6">
+  <h2
+    class="flex items-center justify-start gap-3 text-gray-700 text-2xl font-semibold"
+  >
+    <mat-icon>list_alt</mat-icon>
+    Liste des stocks
+  </h2>
+  <app-search (searchEvent)="doSearch($event)"></app-search>
+
+  <app-message-box
+    [type]="'error'"
+    [message]="errorMsg"
+    (closeEvent)="close()"
+    *ngIf="errorMsg"
+  ></app-message-box>
+
+  <div class="flex flex-col gap-4" *ngIf="stocks.length; else noStock">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Article
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Quantité
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Status
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Active
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Action
+            </th>
+          </tr>
+        </thead>
+
+        <tbody class="bg-white divide-y divide-gray-200">
+          @for(stock of stocks;track stock.id){
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="flex items-center justify-start gap-2">
+                <img
+                  [src]="stock.photos ? `data:image/jpg;base64,${stock.photos}` : '/images/default.png'"
+                  [alt]="stock.name"
+                  class="w-20 h-20 border-none rounded-full"
+                />
+                <span class="text-gray-700">{{ stock.name }}</span>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-gray-800">{{ stock.qtyStock }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                class="px-2 inline-flex text-xs font-semibold leading-5 rounded-2xl"
+                [ngClass]="{
+                  'bg-green-100 text-green-700': stock.alert === 'OK',
+                  'bg-red-100 text-red-700': stock.alert === 'ALERT'
+                }"
+                >{{ stock.alert }}</span
+              >
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                [ngClass]="{
+                  'text-red-400': !stock.isActive,
+                  'text-green-400': stock.isActive
+                }"
+              >
+                {{ stock.isActive ? "Active" : "Non active" }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <mat-slide-toggle
+                [checked]="stock.isActive"
+                (change)="changeStatusStock($event.checked, stock)"
+              >
+              </mat-slide-toggle>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="flex items-center justify-center">
+      <app-pagination
+        [totalPages]="totalPages"
+        [currentPage]="currentPage"
+        (pageChanged)="goToPage($event)"
+      ></app-pagination>
+    </div>
+  </div>
+  <ng-template #noStock>
+    <div class="flex items-center justify-start">
+      <span class="text-gray-600">No stock registered</span>
+    </div>
+  </ng-template>
+</div>
+}

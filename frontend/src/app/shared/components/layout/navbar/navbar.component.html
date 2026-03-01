@@ -1,0 +1,59 @@
+<nav
+  class="fixed top-0 left-0 w-full bg-blue-600 text-white p-4 z-50 shadow-md"
+>
+  <div class="flex justify-between items-center">
+    <!-- Logo à gauche -->
+    <div class="flex items-center">
+      <div class="flex items-center">
+        <span class="material-icons mr-2">inventory_2</span>
+        <a
+          class="font-bold text-xl hover:underline hover:cursor-pointer"
+          routerLink="/home"
+          >StockManager</a
+        >
+      </div>
+    </div>
+
+    <!-- Partie droite avec icônes utilisateur -->
+
+    @if(stockLinksVisible()){
+    <div class="flex items-center space-x-4">
+      <!-- Nom d'utilisateur avec icône -->
+      <button
+        mat-flat-button
+        class="flex items-center cursor-pointer"
+        [matMenuTriggerFor]="profile"
+      >
+        <mat-icon>account_circle</mat-icon>
+        <span>{{ authStore.userDetails()?.fullName }}</span>
+      </button>
+      <mat-menu #profile="matMenu" class="mymegamenu">
+        <button mat-menu-item (click)="showProfile()">
+          <mat-icon>people</mat-icon>
+          <span>Profile</span>
+        </button>
+      </mat-menu>
+
+      <!-- Bouton déconnexion -->
+      <button mat-flat-button (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Se deconnécter</span>
+      </button>
+    </div>
+    } @else {
+    <div class="flex items-center space-x-4">
+      <!-- Boutton de connexion -->
+      <button mat-flat-button (click)="resetPassword()">
+        <mat-icon>password</mat-icon>
+        <span>Modifier le mots de passe</span>
+      </button>
+
+      <!-- Boutton de connexion -->
+      <button mat-flat-button (click)="login()">
+        <mat-icon>login</mat-icon>
+        <span>Se connécter</span>
+      </button>
+    </div>
+    }
+  </div>
+</nav>

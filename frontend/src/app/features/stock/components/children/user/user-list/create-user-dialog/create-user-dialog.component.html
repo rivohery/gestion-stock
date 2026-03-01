@@ -1,0 +1,126 @@
+<div class="p-4">
+  <div class="flex items-center gap-2 mb-6 text-primary">
+    <mat-icon class="scale-125">person_add</mat-icon>
+    <h2 class="text-2xl font-bold m-0">Ajouter un utilisateur</h2>
+  </div>
+
+  <form
+    [formGroup]="createUserForm"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-2"
+  >
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <mat-form-field class="w-full">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="firstName" placeholder="Jean" />
+        <mat-icon matSuffix>badge</mat-icon>
+        <mat-error
+          *ngIf="firstName.invalid && (firstName.touched || firstName.dirty)"
+        >
+          <span *ngxControlError="firstName; track: 'required'"
+            >Le champ prénom est recquis</span
+          >
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="lastName" placeholder="Dupont" />
+        <mat-icon matSuffix>badge</mat-icon>
+        <mat-error
+          *ngIf="lastName.invalid && (lastName.touched || lastName.dirty)"
+        >
+          <span *ngxControlError="lastName; track: 'required'"
+            >Le champ prénom est recquis</span
+          >
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <mat-form-field class="w-full">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          type="email"
+          placeholder="jean.dupont@exemple.com"
+        />
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="email.invalid && (email.touched || email.dirty)">
+          <span *ngxControlError="email; track: 'required'"
+            >Email est réquis</span
+          >
+          <span *ngxControlError="email; track: 'email'"
+            >Email est invalide</span
+          >
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Tél</mat-label>
+        <input
+          matInput
+          formControlName="phoneNu"
+          placeholder="+33 1 23 45 67 89"
+        />
+        <mat-icon matSuffix>badge</mat-icon>
+        <mat-error
+          *ngIf="phoneNu.invalid && (phoneNu.touched || phoneNu.dirty)"
+        >
+          <span *ngxControlError="phoneNu; track: 'required'"
+            >Numeros de teléphone est réquis</span
+          >
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="w-full">
+      <mat-label>Rôles de l'utilisateur</mat-label>
+      <mat-select formControlName="roles" multiple>
+        <mat-select-trigger>
+          <mat-chip-set>
+            <mat-chip
+              *ngFor="let role of createUserForm.get('roles')?.value"
+              [removable]="true"
+              (removed)="onRoleRemoved(role)"
+            >
+              {{ role }}
+              <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip>
+          </mat-chip-set>
+        </mat-select-trigger>
+
+        <mat-option *ngFor="let role of roleList" [value]="role.value">
+          {{ role.label }}
+        </mat-option>
+      </mat-select>
+
+      <mat-error *ngIf="createUserForm.get('roles')?.hasError('required')">
+        Au moins un rôle est requis
+      </mat-error>
+    </mat-form-field>
+
+    <div class="flex justify-end gap-3 mt-4">
+      <button
+        mat-button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 text-gray-500"
+      >
+        Annuler
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="createUserForm?.invalid"
+        class="px-6"
+      >
+        <mat-icon class="mr-1">check</mat-icon>
+        Enregistrer
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,33 @@
+<!-- Conteneur principal -->
+<div class="flex items-center justify-start w-7xl mx-auto">
+  <!-- Sidebar à gauche -->
+  <aside id="sidebar" [class]="sidebarClasses">
+    <app-sidebar [isSidebarExpanded]="isSidebarExpanded"></app-sidebar>
+  </aside>
+
+  <!-- Contenu principal à droite -->
+  <main id="content" [class]="contentClasses">
+    <div class="flex flex-col gap-4">
+      <div class="w-full p-1 border-b border-gray-300 mt-2">
+        <button
+          id="sidebar-toggle"
+          class="mr-3 p-2 rounded-lg hover:bg-gray-200 transition-colors"
+          (click)="toggleSidebar()"
+        >
+          <span class="material-icons">menu</span>
+        </button>
+      </div>
+      <div class="w-full">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Bouton pour ouvrir/fermer le sidebar sur mobile -->
+<button
+  id="sidebar-toggle"
+  class="md:hidden fixed bottom-4 right-4 bg-blue-600 text-white p-3 rounded-full shadow-lg z-50"
+>
+  <span class="material-icons">menu</span>
+</button>

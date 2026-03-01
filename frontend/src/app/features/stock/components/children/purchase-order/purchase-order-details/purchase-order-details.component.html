@@ -1,0 +1,30 @@
+@if(loading()){
+<app-loader></app-loader>
+} @else {
+<div class="flex flex-col gap-4">
+  <app-message-box
+    [message]="errorMsg()"
+    [type]="'error'"
+    *ngIf="errorMsg()"
+    (closeEvent)="close()"
+  ></app-message-box>
+  <div
+    class="bg-gray-100 min-h-screen flex items-center justify-center p-4"
+    *ngIf="purchaseOrdeDetails"
+  >
+    @if(mode === 'details'){
+    <app-order-details-manage
+      [purchaseOrdeDetails]="purchaseOrdeDetails"
+      [updateStatusLoading]="updateStatusLoading()"
+      (updateStatusOnChange)="updateStatusOfPurchaseOrder($event)"
+      (onChangeMode)="generateInvoice($event)"
+    ></app-order-details-manage>
+    } @else {
+    <app-invoice-view
+      [purchaseOrdeDetails]="purchaseOrdeDetails"
+      (onPDfExported)="goBackToDetails($event)"
+    ></app-invoice-view>
+    }
+  </div>
+</div>
+}

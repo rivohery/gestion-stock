@@ -1,0 +1,41 @@
+<form
+  class="flex flex-col gap-3"
+  (ngSubmit)="onSubmit()"
+  [formGroup]="categoryForm"
+>
+  <mat-form-field class="w-full max-w-[500px]">
+    <mat-label>Reference</mat-label>
+    <input matInput formControlName="reference" placeholder="Computers" />
+    <mat-icon matSuffix>badge</mat-icon>
+    <mat-error
+      *ngIf="reference.invalid && (reference.touched || reference.dirty)"
+    >
+      <span *ngxControlError="reference; track: 'required'"
+        >Reference d'un categorie est recquis</span
+      >
+    </mat-error>
+  </mat-form-field>
+  <mat-form-field class="w-full max-w-[500px]">
+    <mat-label>Nom</mat-label>
+    <input matInput formControlName="name" placeholder="computers" />
+    <mat-icon matSuffix>badge</mat-icon>
+    <mat-error *ngIf="name.invalid && (name.touched || name.dirty)">
+      <span *ngxControlError="name; track: 'required'"
+        >Nom d'un categorie est recquis</span
+      >
+    </mat-error>
+  </mat-form-field>
+  <div class="flex items-center flex-start w-full max-w-[500px]">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="categoryForm?.invalid"
+      class="w-full max-w-[160px]"
+    >
+      @if(categoryStore.submiting()){ Submitting.. } @else {
+      <mat-icon class="mr-1">check</mat-icon>
+      Enregistrer }
+    </button>
+  </div>
+</form>

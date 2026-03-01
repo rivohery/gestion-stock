@@ -1,0 +1,104 @@
+<div class="flex flex-col gap-5">
+  <div
+    class="flex justify-start items-center gap-3 text-2xl font-semibold text-gray-600"
+  >
+    <mat-icon>person</mat-icon>
+    {{ title }}
+  </div>
+
+  <app-message-box
+    *ngIf="errorMsg"
+    [type]="'error'"
+    [message]="errorMsg"
+    (closeEvent)="close()"
+  ></app-message-box>
+
+  <form
+    class="flex flex-col gap-3"
+    (ngSubmit)="onSubmit()"
+    [formGroup]="supplierForm"
+  >
+    <div class="grid grid-cols-1 md:grid-cols-2 md:gap-3">
+      <mat-form-field class="w-full">
+        <mat-label>Fournisseur</mat-label>
+        <input matInput formControlName="name" placeholder="John Doe" />
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="name.invalid && (name.touched || name.dirty)">
+          <span *ngxControlError="name; track: 'required'"
+            >Le nom du fournisseur est recquis</span
+          >
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          type="email"
+          placeholder="jean.dupont@exemple.com"
+        />
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="email.invalid && (email.touched || email.dirty)">
+          <span *ngxControlError="email; track: 'required'"
+            >Email est réquis</span
+          >
+          <span *ngxControlError="email; track: 'email'"
+            >Email est invalide</span
+          >
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 md:gap-3">
+      <mat-form-field class="w-full">
+        <mat-label>Tél</mat-label>
+        <input
+          matInput
+          formControlName="phoneNu"
+          placeholder="+33 1 23 45 67 89"
+        />
+        <mat-icon matSuffix>phone</mat-icon>
+        <mat-error
+          *ngIf="phoneNu.invalid && (phoneNu.touched || phoneNu.dirty)"
+        >
+          <span *ngxControlError="phoneNu; track: 'required'"
+            >Numeros de teléphone est réquis</span
+          >
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Adresse</mat-label>
+        <input matInput formControlName="address" placeholder="New York" />
+        <mat-icon matSuffix>home</mat-icon>
+        <mat-error
+          *ngIf="address.invalid && (address.touched || address.dirty)"
+        >
+          <span *ngxControlError="address; track: 'required'"
+            >Adresse du fournisseur est réquis</span
+          >
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="flex items-center justify-start gap-3">
+      <button
+        mat-button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 text-gray-500"
+      >
+        Annuler
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="supplierForm.invalid"
+        class="px-6"
+      >
+        <mat-icon class="mr-1">check</mat-icon>
+        Enregistrer
+      </button>
+    </div>
+  </form>
+</div>

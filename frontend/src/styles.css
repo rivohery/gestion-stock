@@ -1,0 +1,49 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.sidebar-transition {
+  transition: all 0.3s ease;
+}
+.content-transition {
+  transition: all 0.3s ease;
+}
+.dropdown-transition {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.rotate-90 {
+  transform: rotate(90deg);
+}
+
+.black-snackbar {
+  background: black !important;
+  color: white !important;
+}
+
+.green-snackbar {
+  background: #32cd32 !important;
+  color: white !important;
+}
+
+/* style css pour rendre icon chargement (loading) dynamique */
+.spinning {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

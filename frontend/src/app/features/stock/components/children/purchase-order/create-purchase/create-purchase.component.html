@@ -1,0 +1,248 @@
+@if(!invoiceNumberChecking()){
+<app-loader></app-loader>
+} @else {
+<div class="flex flex-col gap-5">
+  <app-message-box
+    [type]="'error'"
+    [message]="errorMsg()"
+    (closeEvent)="close()"
+    *ngIf="errorMsg()"
+  ></app-message-box>
+  <div class="flex flex-col gap-4">
+    <h2
+      class="flex items-center justify-start gap-2 text-gray-700 text-2xl font-semibold"
+    >
+      <mat-icon>add</mat-icon>
+      Commande fournisseur
+    </h2>
+    <form
+      [formGroup]="purchaseOrderForm"
+      #formDirective="ngForm"
+      (ngSubmit)="addPurchaseItem(formDirective)"
+      class="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+    >
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 items-start">
+        <mat-form-field class="w-full">
+          <mat-label>Facture n°</mat-label>
+          <input matInput formControlName="invoiceNo" readonly />
+          <mat-icon matSuffix class="text-gray-400">receipt</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Délivré le:</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            [formControl]="receiveDate"
+          />
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Fournisseur</mat-label>
+          <mat-select
+            formControlName="supplierId"
+            (selectionChange)="getProductsBySupplierId($event.value)"
+          >
+            @for(supplier of supplierList; track supplier.id){
+            <mat-option [value]="supplier.id">{{ supplier.name }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix class="text-gray-400">store_front</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <hr class="my-4 border-gray-100" />
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2">
+        <mat-form-field class="w-full">
+          <mat-label>Articles</mat-label>
+          <mat-select
+            formControlName="productId"
+            (selectionChange)="checkProduct($event.value)"
+          >
+            @for(product of productListBySupplier; track product.id){
+            <mat-option [value]="product.id">{{ product.name }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix class="text-gray-400">shopping_basket</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="w-full bg-gray-50/50 rounded-t-md">
+          <mat-label>Prix d'achat</mat-label>
+          <input
+            matInput
+            [value]="
+              checkedProduct
+                ? (checkedProduct.costPrice | currency : 'EUR')
+                : '0.00 €'
+            "
+            readonly
+          />
+          <mat-icon matSuffix class="text-gray-400">sell</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="w-full bg-gray-50/50 rounded-t-md">
+          <mat-label>Stock actuel</mat-label>
+          <input
+            matInput
+            [value]="checkedProduct ? checkedProduct.qtyStock : 0"
+            readonly
+          />
+          <mat-icon matSuffix class="text-gray-400">inventory_2</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 mt-2">
+        <mat-form-field class="w-full">
+          <mat-label>Quantité voulue</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="quantity"
+            (input)="calculTotalItems()"
+            min="0"
+          />
+          <mat-icon matSuffix class="text-gray-400">numbers</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="w-full bg-blue-50/30 rounded-t-md">
+          <mat-label>Total de la ligne</mat-label>
+          <input
+            matInput
+            formControlName="itemsPrice"
+            readonly
+            class="font-bold text-primary"
+          />
+          <mat-icon matSuffix class="text-primary">payments</mat-icon>
+        </mat-form-field>
+
+        <div class="h-[56px] flex items-center">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            class="w-full h-full rounded-md shadow-md hover:shadow-lg transition-all"
+            [disabled]="purchaseOrderForm.invalid"
+          >
+            <mat-icon class="mr-2">add_circle</mat-icon>
+            <span class="font-semibold uppercase tracking-wide text-sm"
+              >Ajouter au panier</span
+            >
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div
+      class="overflow-x-auto rounded-lg border border-gray-200 shadow-md mx-5"
+    >
+      <table
+        class="w-full border-collapse bg-white text-left text-sm text-gray-500"
+      >
+        <thead class="bg-gray-400 border-b-2 border-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-bold text-gray-900">
+              ID Produit
+            </th>
+            <th scope="col" class="px-6 py-4 font-bold text-gray-900">
+              Nom du Produit
+            </th>
+            <th scope="col" class="px-6 py-4 font-bold text-gray-900">
+              Quantité
+            </th>
+            <th scope="col" class="px-6 py-4 font-bold text-gray-900">
+              Prix items
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-4 font-bold text-gray-900 text-center"
+            >
+              Action
+            </th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-100 border-t border-gray-100">
+          <tr
+            *ngFor="let item of orderItems"
+            class="hover:bg-gray-50 transition-colors"
+          >
+            <td class="px-6 py-4 font-medium text-gray-700">
+              #{{ item.productId }}
+            </td>
+            <td class="px-6 py-4">{{ item.productName }}</td>
+            <td class="px-6 py-4">
+              <span
+                class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
+              >
+                {{ item.quantity }}
+              </span>
+            </td>
+            <td class="px-6 py-4 font-semibold text-gray-900">
+              {{ item.totalItems | currency : "EUR" }}
+            </td>
+            <td class="px-6 py-4 text-center">
+              <button
+                (click)="removeItem(item.productId)"
+                class="text-red-500 hover:text-red-700 transition-transform hover:scale-110"
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex justify-center my-5 px-4">
+      <div
+        class="w-full max-w-md bg-white p-6 rounded-xl border border-gray-200 shadow-lg"
+      >
+        <div class="flex flex-col space-y-6">
+          <div class="flex flex-col">
+            <label
+              class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-2"
+            >
+              <mat-icon class="scale-75">payments</mat-icon>
+              Somme totale de la commande
+            </label>
+
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <span class="text-gray-500 sm:text-sm">€</span>
+              </div>
+              <input
+                type="text"
+                readonly
+                [value]="totalAmounts | number : '1.2-2'"
+                class="block w-full pl-8 pr-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 font-bold text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <button
+            (click)="sendPurchaseOrder()"
+            [disabled]="sendingOrder()"
+            class="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-all transform active:scale-95 shadow-md hover:shadow-lg"
+          >
+            @if(sendingOrder()){
+            <mat-icon class="spinning">autorenew</mat-icon>
+            }@else {
+            <mat-icon>send</mat-icon>
+            }
+            <span>Envoyer la commande</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

@@ -1,0 +1,35 @@
+<div class="p-4" *ngIf="data && data.userId">
+  <div class="flex items-center gap-2 mb-6 text-primary">
+    <mat-icon class="scale-125">person</mat-icon>
+    <h2 class="text-2xl font-bold m-0">{{ data.fullName }}</h2>
+  </div>
+  <form class="flex flex-col gap-2" (ngSubmit)="onSubmit()">
+    <p class="text-md font-semibold text-gray-600">
+      Changer le status utilisateur:
+    </p>
+    <mat-checkbox [formControl]="statusControl">
+      @if(statusControl.value){
+      <span class="text-green-600">Activé</span>
+      } @else {
+      <span class="text-red-500">Désactivé</span>
+      }
+    </mat-checkbox>
+    <div class="flex justify-end gap-3 mt-4">
+      <button
+        mat-button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 text-gray-500"
+      >
+        Annuler
+      </button>
+      <button mat-raised-button color="primary" type="submit" class="px-6">
+        <span *ngIf="loading()">Loading..</span>
+        <span *ngIf="!loading()">
+          <mat-icon class="mr-1">check</mat-icon>
+          Enregistrer
+        </span>
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SecondApp</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="mat-typography">
+    <app-root></app-root>
+    <script>
+      // Gestion du toggle du sidebar sur mobile
+      document
+        .getElementById("sidebar-toggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("sidebar");
+          const content = document.getElementById("content");
+
+          if (sidebar.classList.contains("-translate-x-full")) {
+            sidebar.classList.remove("-translate-x-full");
+            content.classList.remove("ml-0");
+            content.classList.add("ml-64");
+          } else {
+            sidebar.classList.add("-translate-x-full");
+            content.classList.remove("ml-64");
+            content.classList.add("ml-0");
+          }
+        });
+
+      // Gestion des dropdowns
+      document.querySelectorAll(".dropdown-item").forEach((item) => {
+        const button = item.querySelector("button");
+        const dropdown = item.querySelector(".dropdown-transition");
+        const arrow = item.querySelector(".dropdown-arrow");
+
+        button.addEventListener("click", function () {
+          if (dropdown.classList.contains("max-h-0")) {
+            dropdown.classList.remove("max-h-0");
+            dropdown.classList.add("max-h-96", "py-2");
+            arrow.classList.add("rotate-90");
+          } else {
+            dropdown.classList.add("max-h-0");
+            dropdown.classList.remove("max-h-96", "py-2");
+            arrow.classList.remove("rotate-90");
+          }
+        });
+      });
+
+      // Adaptation pour mobile au chargement
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.innerWidth < 768) {
+          const sidebar = document.getElementById("sidebar");
+          const content = document.getElementById("content");
+
+          sidebar.classList.add("-translate-x-full");
+          content.classList.remove("ml-64");
+          content.classList.add("ml-0");
+        }
+      });
+    </script>
+  </body>
+</html>

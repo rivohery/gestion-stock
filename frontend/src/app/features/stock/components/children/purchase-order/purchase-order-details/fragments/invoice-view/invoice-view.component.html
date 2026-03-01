@@ -1,0 +1,113 @@
+<div class="container-facture">
+  <div class="actions-header no-print">
+    <button (click)="genererPDF()" class="btn-download" id="download-btn">
+      <mat-icon>download</mat-icon>
+      <span class="btn-text">Exporter en PDF</span>
+    </button>
+  </div>
+
+  <div
+    #factureSection
+    class="facture-body"
+    id="print-section"
+    *ngIf="purchaseOrdeDetails"
+  >
+    <div class="facture-header">
+      <div class="company-info">
+        <h1 class="company-name">Ma Société XYZ</h1>
+        <p class="company-details">
+          123 Rue du Commerce, 75000 Mada<br />
+          contact&#64;masociete.com | +33 1 23 45 67 89
+        </p>
+      </div>
+      <div class="invoice-title-container">
+        <h2 class="invoice-title">Facture</h2>
+        <p class="invoice-subtitle">Commande Fournisseur</p>
+      </div>
+    </div>
+
+    <div class="billing-grid">
+      <div class="supplier-info">
+        <h3 class="section-label">Fournisseur</h3>
+        <p class="supplier-name">{{ purchaseOrdeDetails.supplierName }}</p>
+        <p class="supplier-sub">Détails du compte fournisseur</p>
+      </div>
+      <div class="invoice-meta">
+        <div class="meta-row">
+          <span class="meta-label">N° Facture :</span>
+          <span class="meta-value"
+            >#FAC-{{ purchaseOrdeDetails.invoiceNo }}</span
+          >
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Date d'émission :</span>
+          <span class="meta-value">{{
+            purchaseOrdeDetails.createdDate | date : "dd/MM/yyyy"
+          }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Livraison prévue :</span>
+          <span class="meta-value">{{
+            purchaseOrdeDetails.receiveDate | date : "dd/MM/yyyy"
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span class="prepared-by"
+        >Préparé par : {{ purchaseOrdeDetails.employee }}</span
+      >
+    </div>
+
+    <div class="table-container">
+      <table class="facture-table">
+        <thead>
+          <tr>
+            <th class="text-left">Produit</th>
+            <th class="text-center">Prix Unitaire</th>
+            <th class="text-center">Quantité</th>
+            <th class="text-right">Total HT</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(item of purchaseOrdeDetails.items; track item.itemName){
+          <tr>
+            <td class="text-left font-medium">{{ item.itemName }}</td>
+            <td class="text-center">{{ item.costPrice | currency : "EUR" }}</td>
+            <td class="text-center">{{ item.quantity }}</td>
+            <td class="text-right font-bold">
+              {{ item.totalItems | currency : "EUR" }}
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="totals-container">
+      <div class="totals-box">
+        <div class="subtotal-row">
+          <span class="label">Sous-total</span>
+          <span class="value">{{
+            purchaseOrdeDetails.totalAmounts | currency : "EUR"
+          }}</span>
+        </div>
+        <div class="grand-total-row">
+          <span class="label">Total</span>
+          <span class="value">{{
+            purchaseOrdeDetails.totalAmounts | currency : "EUR"
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="facture-footer">
+      <p>Merci pour votre collaboration !</p>
+      <p class="footer-note">
+        Cette facture est générée électroniquement et ne nécessite pas de
+        signature.
+      </p>
+    </div>
+  </div>
+</div>

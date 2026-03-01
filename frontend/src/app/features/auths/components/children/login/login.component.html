@@ -1,0 +1,64 @@
+<form [formGroup]="loginForm" (ngSubmit)="doLogin()" class="w-md mx-auto mt-12">
+  <mat-card class="flex-col gap-4 mat-elevation-z8">
+    <mat-card-header class="border-0 rounded-t-lg">
+      <h1 class="text-gray-600 text-2xl font-bold">
+        <mat-icon>people</mat-icon>
+        Se connécter
+      </h1>
+    </mat-card-header>
+    <mat-card-content class="flex flex-col gap-10">
+      <mat-form-field class="w-full">
+        <mat-label>Email</mat-label>
+        <input
+          required
+          matInput
+          placeholder="Entrer votre email"
+          formControlName="email"
+        />
+        <mat-error *ngIf="emailInvalid">
+          <span *ngxControlError="email; track: 'required'"
+            >Email est réquis</span
+          >
+          <span *ngxControlError="email; track: 'email'"
+            >Email est invalide</span
+          >
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Mots de passe</mat-label>
+        <input
+          required
+          matInput
+          placeholder="Entrer votre mots de passe"
+          type="password"
+          formControlName="password"
+        />
+        <mat-error *ngIf="passwordInvalid">
+          <span *ngxControlError="password; track: 'required'">
+            Mots de passe est réquis
+          </span>
+          <span *ngxControlError="password; track: 'minlength'">
+            Mots de passe a au moins 4 caractères
+          </span>
+        </mat-error>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <div class="w-[96%] mx-auto flex flex-col gap-4 text-left">
+        <button type="submit" mat-flat-button color="primary" class="w-full">
+          <span *ngIf="authStore.loading()">Loading... </span>
+          <span *ngIf="!authStore.loading()">Se connécter</span>
+        </button>
+        <p class="text-gray-600 text-sm ml-2">
+          Si vous avez oublié votre mots de passe,cliquer ce
+          <a
+            routerLink="/forgot-password"
+            class="text-blue-500 hover:text-blue-600 hover:underline hover:font-semibold"
+            >Lien</a
+          >
+        </p>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</form>

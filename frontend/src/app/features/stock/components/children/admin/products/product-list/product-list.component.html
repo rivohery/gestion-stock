@@ -1,0 +1,141 @@
+<div class="flex flex-col gap-7">
+  <app-search (searchEvent)="doSearch($event)"></app-search>
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center justify-between">
+      <span
+        class="flex items-center justify-start gap-2 text-gray-700 text-2xl font-semibold"
+      >
+        <mat-icon>list_alt</mat-icon>
+        Liste des produits
+      </span>
+      <button mat-flat-button color="primary" (click)="onCreate()">
+        Nouveau produit
+      </button>
+    </div>
+
+    <app-message-box
+      [type]="'error'"
+      [message]="errorMsg"
+      (closeEvent)="close()"
+      *ngIf="errorMsg"
+    ></app-message-box>
+
+    <div class="overflow-x-auto flex flex-col gap-4" *ngIf="productList.length">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Article
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Prix d'achat
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Prix de vente
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Quantité alert
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Unité
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Fournisseur
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          @for(product of productList;track product.id){
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="flex items-center justify-start gap-3">
+                <img
+                  [src]="product.photos ? `data:image/jpg;base64,${product.photos}` : '/images/default.png'"
+                  [alt]="product.code"
+                  class="w-20 h-20 border-none rounded-full"
+                />
+                <span class="flex flex-col gap-2">
+                  <span class="font-semibold text-gray-700 text-lg">{{
+                    product.name
+                  }}</span>
+                  <span class="font-semibold text-gray-600 text-md">{{
+                    product.code
+                  }}</span>
+                  <span class="font-semibold text-gray-500 text-sm">{{
+                    product.categoryName
+                  }}</span>
+                </span>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="font-semibold text-gray-800">{{
+                product.costPrice
+              }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="font-semibold text-gray-800">{{
+                product.salesPrice
+              }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-red-500"
+                >{{ product.alertStock }}</span
+              >
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-gray-800">{{ product.unity }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-gray-800">{{ product.supplierName }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="flex items-center justify-between gap-3">
+                <button
+                  mat-icon-button
+                  color="accent"
+                  (click)="onDelete(product)"
+                  [disabled]="deletingId === product.id"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="onEdit(product)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </span>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      <div class="flex items-center justify-center">
+        <app-pagination
+          [totalPages]="totalPages"
+          [currentPage]="currentPage"
+          (pageChanged)="goToPage($event)"
+        ></app-pagination>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<mat-card class="p-5">
+  <mat-form-field class="w-full">
+    <mat-label>Recherche</mat-label>
+    <input
+      required
+      matInput
+      placeholder="Entrer le mot clé"
+      [formControl]="searchControl"
+      (keyup)="doSearch()"
+    />
+  </mat-form-field>
+</mat-card>

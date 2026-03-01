@@ -1,0 +1,233 @@
+@if(loadingPage()){
+<app-loader></app-loader>
+} @else {
+<div class="flex flex-col gap-5">
+  <app-message-box
+    [type]="'error'"
+    [message]="errorMsg()"
+    *ngIf="errorMsg()"
+    (closeEvent)="closeMessageBox()"
+  ></app-message-box>
+
+  <div class="bg-gray-50 min-h-screen w-full">
+    <div class="max-w-6xl mx-auto space-y-6">
+      <form
+        class="bg-white p-6 rounded-xl shadow-sm border border-gray-200"
+        [formGroup]="billOrderForm"
+        #formDirective="ngForm"
+        (ngSubmit)="addOrderItem(formDirective)"
+      >
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600 text-3xl font-bold"
+            >Numero de facture:</span
+          >
+          <mat-form-field class="w-full max-w-xs">
+            <mat-label>N° Facture</mat-label>
+            <input matInput formControlName="invoiceNo" readonly />
+          </mat-form-field>
+        </div>
+
+        <h2
+          class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-600"
+        >
+          <mat-icon class="text-blue-600">person</mat-icon> Informations Client
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <mat-form-field class="w-full">
+            <mat-label>Nom du Client</mat-label>
+            <input
+              matInput
+              formControlName="customer"
+              placeholder="Jean Dupont"
+            />
+          </mat-form-field>
+
+          <mat-form-field class="w-full">
+            <mat-label>Téléphone</mat-label>
+            <input
+              matInput
+              formControlName="phoneNu"
+              placeholder="0123456789"
+            />
+          </mat-form-field>
+
+          <mat-form-field class="w-full">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              placeholder="client@exemple.com"
+            />
+          </mat-form-field>
+
+          <mat-form-field class="w-full">
+            <mat-label>Paiement</mat-label>
+            <mat-select formControlName="paymentMethod">
+              <mat-option value="Cash">Cash</mat-option>
+              <mat-option value="Credit Card">Credit Card</mat-option>
+              <mat-option value="Debit Card">Debit Card</mat-option>
+              <mat-option value="Mobile Monaie">Mobile monaie</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <h2
+          class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-600"
+        >
+          <mat-icon class="text-green-600">shopping_basket</mat-icon>
+          Sélection Produits
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
+          <mat-form-field>
+            <mat-label>Catégorie</mat-label>
+            <mat-select
+              formControlName="categoryId"
+              (selectionChange)="onSelectCategory($event.value)"
+            >
+              <mat-option *ngFor="let cat of categories" [value]="cat.id">{{
+                cat.name
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Produit</mat-label>
+            <mat-select
+              formControlName="productId"
+              (selectionChange)="onSelectProduct($event.value)"
+            >
+              <mat-option
+                *ngFor="let product of productsByCategory"
+                [value]="product.id"
+                >{{ product.name }}</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Prix Unitaire</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="salesPrice"
+              readonly
+            />
+            <span matSuffix>€</span>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Stock Restant</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="qtyStock"
+              readonly
+              min="0"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+          <mat-form-field>
+            <mat-label>Quantité</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="quantity"
+              min="0"
+              (input)="calculTotalItems()"
+            />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Total items</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="totalItems"
+              min="0"
+              readonly
+            />
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            color="primary"
+            class="h-16 w-full py-1"
+            type="submit"
+            [disabled]="billOrderForm.invalid"
+          >
+            <mat-icon>add_shopping_cart</mat-icon> AJOUTER AU PANIER
+          </button>
+        </div>
+      </form>
+
+      <div
+        *ngIf="panier.length > 0"
+        class="bg-white p-4 rounded-lg shadow-inner"
+      >
+        <h3 class="font-semibold mb-2">
+          Articles dans le panier : {{ panier.length }}
+        </h3>
+        <ul class="text-sm">
+          <li
+            *ngFor="let item of panier"
+            class="flex justify-between border-b py-3"
+          >
+            <span>{{ item.productName }} (x{{ item.quantity }})</span>
+            <span class="font-medium">{{
+              item.totalItems | currency : "EUR"
+            }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex justify-center my-5 px-4">
+        <div
+          class="w-full max-w-md bg-white p-6 rounded-xl border border-gray-200 shadow-lg"
+        >
+          <div class="flex flex-col space-y-6">
+            <div class="flex flex-col">
+              <label
+                class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-2"
+              >
+                <mat-icon class="scale-75">payments</mat-icon>
+                Somme totale de la commande
+              </label>
+
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <span class="text-gray-500 sm:text-sm">€</span>
+                </div>
+                <input
+                  type="text"
+                  readonly
+                  [value]="total | currency : 'EUR'"
+                  class="block w-full pl-8 pr-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 font-bold text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              (click)="sendBillOrder()"
+              [disabled]="sendingOrder()"
+              class="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-all transform active:scale-95 shadow-md hover:shadow-lg"
+            >
+              @if(sendingOrder()){
+              <mat-icon class="spinning">autorenew</mat-icon>
+              }@else {
+              <mat-icon>send</mat-icon>
+              }
+              <span>Envoyer la commande</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

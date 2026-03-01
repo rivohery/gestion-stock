@@ -1,0 +1,95 @@
+<mat-card class="flex flex-col gap-7 mat-elevation-z8 p-5">
+  <div class="w-full block">
+    <!--  <div class="w-40 h-40 rounded-full bg-gray-600"></div> -->
+    <app-image-upload
+      [isUploading]="isUploading"
+      [image]="image"
+      (imageUploadEvent)="uploadImage($event)"
+    ></app-image-upload>
+  </div>
+  <div class="w-full flex flex-col gap-5">
+    <h1 class="flex items-center justify-start gap-3 text-2xl text-bold">
+      <mat-icon>infos</mat-icon>
+      Profile utilisateur
+    </h1>
+    <form
+      class="w-full flex flex-col gap-4"
+      [formGroup]="profileForm"
+      (ngSubmit)="updateUserInfos()"
+    >
+      <div class="w-full">
+        <div class="w-full flex items-center justify-center gap-3">
+          <mat-form-field class="flex-1">
+            <mat-label>Nom</mat-label>
+            <input
+              matInput
+              placeholder="Entrer votre nom"
+              formControlName="firstName"
+            />
+            <mat-error *ngIf="firstNameInvalid">
+              <span *ngxControlError="firstName; track: 'required'"
+                >Champ nom est réquis</span
+              >
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="flex-1">
+            <mat-label>Prénom</mat-label>
+            <input
+              matInput
+              placeholder="Entrer votre prénom"
+              formControlName="lastName"
+            />
+            <mat-error *ngIf="lastNameInvalid">
+              <span *ngxControlError="lastName; track: 'required'"
+                >Champ prénom est réquis</span
+              >
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="w-full flex items-center justify-center gap-3">
+          <mat-form-field class="flex-1">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              placeholder="Entrer votre adresse email"
+              formControlName="email"
+            />
+            <mat-error *ngIf="emailInvalid">
+              <span *ngxControlError="email; track: 'required'"
+                >Champ email est réquis</span
+              >
+              <span *ngxControlError="email; track: 'email'"
+                >Email invalide</span
+              >
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="flex-1">
+            <mat-label>Numéro tél</mat-label>
+            <input
+              matInput
+              placeholder="Entrer votre numéro"
+              formControlName="phoneNu"
+            />
+            <mat-error *ngIf="phoneNuInvalid">
+              <span *ngxControlError="phoneNu; track: 'required'"
+                >Numéro de téléphone est réquis</span
+              >
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="w-full flex items-center justify-end gap-3">
+        <button mat-flat-button color="primary" type="submit">
+          <span *ngIf="loading()">Loading...</span>
+          <span *ngIf="!loading()">Modifier</span>
+        </button>
+        <button
+          class="bg-slate-600 text-white rounded-3xl p-2 hover:bg-slate-700 w-[120px]"
+          (click)="cancel()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+</mat-card>

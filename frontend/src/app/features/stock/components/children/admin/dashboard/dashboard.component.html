@@ -1,0 +1,129 @@
+@if(loading()){
+<app-loader></app-loader>
+} @else {
+<div class="flex flex-col gap-4">
+  <app-message-box
+    [message]="errorMsg()"
+    [type]="'error'"
+    *ngIf="errorMsg()"
+    (closeEvent)="closeMsgBox()"
+  ></app-message-box>
+
+  <div class="bg-white rounded-lg shadow p-6" *ngIf="summary">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Tableau de Bord</h1>
+
+    <!-- Cartes de statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-green-600">Articles en ligne</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ summary.nbrProductActive }}
+            </p>
+          </div>
+          <span class="material-icons text-green-500 text-3xl"
+            >shopping_cart</span
+          >
+        </div>
+      </div>
+
+      <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-blue-600">Articles en rupture</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ summary.nbrProductNoActive }}
+            </p>
+          </div>
+          <span class="material-icons text-blue-500 text-3xl">inventory_2</span>
+        </div>
+      </div>
+
+      <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-yellow-600">Articles en alerte</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ summary.nbrProductEnAlert }}
+            </p>
+          </div>
+          <span class="material-icons text-yellow-500 text-3xl">warning</span>
+        </div>
+      </div>
+
+      <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-purple-600">Fournisseurs</p>
+            <p class="text-2xl font-bold text-gray-800">
+              {{ summary.nbrSupplier }}
+            </p>
+          </div>
+          <span class="material-icons text-purple-500 text-3xl"
+            >local_shipping</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Tableau récent des mouvements -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-800">Mouvements récents</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Article
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Type
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Quantité
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Date
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let movementStock of summary.lastMovementStock">
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ movementStock.productName }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700': movementStock.type === 'IN',
+                    'bg-red-100 text-red-600': movementStock.type === 'OUT'
+                  }"
+                  >{{ movementStock.type === "IN" ? "ENTREE" : "SORTIE" }}</span
+                >
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ movementStock.quantity }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ movementStock.createdDate | date : "dd/MM/yyyy" }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+}

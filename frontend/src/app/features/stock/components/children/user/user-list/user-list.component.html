@@ -1,0 +1,31 @@
+<div class="flex flex-col gap-5 w-full">
+  <app-search (searchEvent)="doSearch($event)"></app-search>
+  <div class="flex flex-col gap-3">
+    <div class="flex items-center justify-end">
+      <button
+        mat-flat-button
+        color="primary"
+        class="flext items-center justify-center gap-2"
+        (click)="openDialogToAddUser()"
+      >
+        <mat-icon>add</mat-icon>
+        <span>Ajout utilisateur</span>
+      </button>
+    </div>
+    <div class="flex items-center justify-center" *ngIf="loading()">
+      <span class="text-gray-500 text-lg">Loading...</span>
+    </div>
+    <div class="flex flex-col gap-2" *ngIf="userPages">
+      @for(userDetails of userPages.content;track userDetails.userId){
+      <app-user-list-item [userDetails]="userDetails"></app-user-list-item>
+      }
+    </div>
+  </div>
+  <div class="flex items-center justify-center" *ngIf="userPages">
+    <app-pagination
+      [totalPages]="userPages?.totalPages || 0"
+      [currentPage]="currentPage || 0"
+      (pageChanged)="goToPage($event)"
+    ></app-pagination>
+  </div>
+</div>
