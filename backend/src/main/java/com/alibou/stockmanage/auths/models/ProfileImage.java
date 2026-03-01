@@ -2,6 +2,8 @@ package com.alibou.stockmanage.auths.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import java.sql.Types;
 
 @Getter
 @Setter
@@ -21,6 +23,7 @@ public class ProfileImage {
 
     @Lob
     @Column(nullable = false)
+    @JdbcTypeCode(Types.BINARY) // Force l'utilisation de bytea au lieu de l'OID Large Object
     private byte[]images;//type byte[] mais non Blob car le profile n'est pas "volumineux" <= 1GO
 
     @OneToOne(fetch = FetchType.LAZY)
