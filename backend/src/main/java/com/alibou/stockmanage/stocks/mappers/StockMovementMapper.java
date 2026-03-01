@@ -7,11 +7,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class StockMovementMapper {
     private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
     public StockMovementDto mapToDto(StockMovement stockMovement){
         var employeeDetails = userRepository.getEmployeeDetail(stockMovement.getCreatedBy()).orElseThrow(
                 () -> new EntityNotFoundException("No entity UserDetails found")
