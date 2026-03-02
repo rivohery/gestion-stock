@@ -119,7 +119,7 @@ public class ProductController {
     }
 
     @PatchMapping("/products/update-status")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','STOCK_MANAGER')")
     public ResponseEntity<GlobalResponse>updateStatus(
           @Valid @RequestBody  UpdateProductStatusRequest request
     ){
@@ -134,8 +134,8 @@ public class ProductController {
         return ResponseEntity.internalServerError().build();
     }
 
-    @GetMapping("/products/find-all-stock") //Vue sur dashboard(admin)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/products/find-all-stock")
+    @PreAuthorize("hasAnyAuthority('ADMIN','STOCK_MANAGER')")
     public ResponseEntity<PageResponse<StockResponse>>findAllStock(
             @RequestParam(name="search", defaultValue = "") String search,
             @RequestParam(name="page", defaultValue = "0")int page,
