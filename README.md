@@ -58,3 +58,4 @@ Une application web robuste de gestion commerciale permettant de piloter les sto
 3. Lancez l'application :
    ```bash
    ./mvnw spring-boot:run
+
