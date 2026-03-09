@@ -32,6 +32,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final UserDetailsService userDetailsService;
     private final OTPTokenRepository otpTokenRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
@@ -78,16 +80,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void forgotPasswordProcess(String email) {
         Optional<User> optional = userRepository.findByEmail(email);
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             throw new EntityNotFoundException(String.format(SecurityConstant.USER_NOT_FOUND_MSG, email));
         }
 
-        if(!optional.get().isEnabled()){
+        if (!optional.get().isEnabled()) {
             throw new DisabledException(SecurityConstant.USER_DISABLED_MSG);
         }
-        try{
+        try {
             sendValidationEmail(optional.get());
-        }catch (MessagingException ex){
+        } catch (MessagingException ex) {
             ex.printStackTrace();
             throw new SendingEmailException(ex.getMessage());
         }
@@ -95,18 +97,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse loginByOTP(String token, HttpServletResponse response) {
-        try{
+        try {
             OTPToken savedToken = checkOTPTokenAndValidate(token);
-            if(savedToken != null){
+            if (savedToken != null) {
                 User user = savedToken.getUser();
                 UserPrincipal userDetails = new UserPrincipal(user);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
                 saveAndPrepareCookieForRefreshToken(userDetails, response);
                 return buildLoginResponse(userDetails);
             }
@@ -128,32 +123,25 @@ public class AuthServiceImpl implements AuthService {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh Token Missing");
             return;
         }
-        userEmail = jwtService.extractUsername(refreshTokenFromCookie);
-        if (userEmail != null) {
-            var user = this.userRepository.findByEmail(userEmail).orElseThrow(
-                    () -> new EntityNotFoundException(String.format(SecurityConstant.USER_NOT_FOUND_MSG, userEmail))
-            );
-            var userPrincipal = new UserPrincipal(user);
-            if (jwtService.isTokenValid(refreshTokenFromCookie, userPrincipal)) {
 
-                var refreshToken = refreshTokenRepository.findByToken(refreshTokenFromCookie).orElse(null);
-                //Pour s'assurer que le refresh token n'est utilisé qu'une seule fois
-                if (refreshToken == null || refreshToken.isRevoked()) {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh Token Not exist || already revoked");
-                    return;
-                }
-                refreshToken.setRevoked(true);
-                refreshTokenRepository.save(refreshToken);
-
-                //On génère un nouvel accessToken et refreshToken
-                saveAndPrepareCookieForRefreshToken(userPrincipal, response);
-                var loginResponse = buildLoginResponse(userPrincipal);
-
-                new ObjectMapper().writeValue(response.getOutputStream(), loginResponse);
-            } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Refresh Token");
+        if (jwtService.isTokenValid(refreshTokenFromCookie)) {
+            RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenFromCookie).orElse(null);
+            //Pour s'assurer que le refresh token n'est utilisé qu'une seule fois
+            if (refreshToken == null || refreshToken.isRevoked()) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh Token Not exist || already revoked");
+                return;
             }
+            refreshToken.setRevoked(true);
+            refreshTokenRepository.save(refreshToken);
+
+            //On génère un nouvel accessToken et refreshToken
+            UserPrincipal userPrincipal = (UserPrincipal) userDetailsService.loadUserByUsername(jwtService.extractUsername(refreshTokenFromCookie));
+            saveAndPrepareCookieForRefreshToken(userPrincipal, response);
+            var loginResponse = buildLoginResponse(userPrincipal);
+
+            new ObjectMapper().writeValue(response.getOutputStream(), loginResponse);
         } else {
+            clearRefreshTokenCookie(response);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Refresh Token");
         }
     }
@@ -161,10 +149,25 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null){
+        if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
+        clearRefreshTokenCookie(response);
+    }
 
+    @Override
+    public Long resetPassword(UpdatePasswordRequest request) {
+        var user = this.userRepository.findByEmail(request.email()).orElseThrow(
+                () -> new EntityNotFoundException(String.format(SecurityConstant.USER_NOT_FOUND_MSG, request.email()))
+        );
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new OperationNotPermittedException("OldPassword and currentPassword are not match");
+        }
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        return userRepository.save(user).getId();
+    }
+
+    private void clearRefreshTokenCookie(HttpServletResponse response) {
         // Supprimer le cookie de refresh token côté client
         Cookie refreshTokenCookie = new Cookie("refreshToken", "");
         refreshTokenCookie.setHttpOnly(true);
@@ -173,18 +176,6 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(0); // Expirer le cookie immédiatement
         response.addCookie(refreshTokenCookie);
-    }
-
-    @Override
-    public Long resetPassword(UpdatePasswordRequest request) {
-        var user = this.userRepository.findByEmail(request.email()).orElseThrow(
-                () -> new EntityNotFoundException(String.format(SecurityConstant.USER_NOT_FOUND_MSG, request.email()))
-        );
-        if(!passwordEncoder.matches(request.oldPassword(), user.getPassword())){
-           throw new OperationNotPermittedException("OldPassword and currentPassword are not match");
-        }
-        user.setPassword(passwordEncoder.encode(request.newPassword()));
-        return userRepository.save(user).getId();
     }
 
     private OTPToken checkOTPTokenAndValidate(String token) throws MessagingException {
@@ -206,10 +197,9 @@ public class AuthServiceImpl implements AuthService {
 
         saveUserRefreshToken(userPrincipal.getUser(), refreshToken);
 
-        //Cookies HttpOnly :pour protéger contre les attaques XSS (Cross-Site Scripting)
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setAttribute("SameSite", "None");
+        refreshTokenCookie.setHttpOnly(true);//contre les attaques XSS
+        refreshTokenCookie.setAttribute("SameSite", "None");//Normalement pour protéger contre les attaques de type CSRF; on met l'attribut SameSite=Lax(standard) ou Strict(Le plus sûr) pour une application Fullstack classique (Angular sur un domaine, Spring Boot sur le même domaine ou un sous-domaine); Mais Ici le frontend et le backend peuvent être sur deux domaines totalement différents (ex: mon-front.vercel.app et mon-api.herokuapp.com)
         refreshTokenCookie.setSecure(true); // À utiliser en production avec HTTPS
         refreshTokenCookie.setPath("/"); // Accessible depuis toutes les URLs
         refreshTokenCookie.setMaxAge((int) (jwtService.getRefreshExpiration() / 1000)); // En secondes
@@ -218,7 +208,7 @@ public class AuthServiceImpl implements AuthService {
 
     private void diseableAllUserRefreshTokens(User user) {
         var noRevokedTokens = refreshTokenRepository.findAllNoRevokedTokensByUser(user.getId());
-        if (noRevokedTokens == null || noRevokedTokens.isEmpty()){
+        if (noRevokedTokens == null || noRevokedTokens.isEmpty()) {
             return;
         }
         noRevokedTokens.forEach(token -> {
@@ -254,7 +244,7 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-    private String generateAndSaveActivationToken(User user){
+    private String generateAndSaveActivationToken(User user) {
         String generatedToken = TokenGenerator.generateNumericCode(SecurityConstant.OTP_TOKEN_LENGTH);
         var otpToken = OTPToken.builder()
                 .token(generatedToken)
