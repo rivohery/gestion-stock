@@ -6,6 +6,7 @@ import com.alibou.stockmanage.reporting.pdf.service.StockMovementReportPdf;
 import com.alibou.stockmanage.shared.dtos.PageResponse;
 import com.alibou.stockmanage.stocks.mappers.StockMovementMapper;
 import com.alibou.stockmanage.stocks.models.StockMovement;
+import com.alibou.stockmanage.stocks.models.StockMovementProjection;
 import com.alibou.stockmanage.stocks.repositories.StockMovementRepository;
 import com.alibou.stockmanage.stocks.service.StockMovementService;
 import com.alibou.stockmanage.stocks.web.dtos.StockMovementDto;
@@ -30,11 +31,11 @@ public class StockMovementServiceImpl implements StockMovementService {
 
     @Override
     public PageResponse<StockMovementDto> findAllMovementStock(LocalDate createdDate, Pageable pageable) {
-        Page<StockMovement>pages;
+        Page<StockMovementProjection>pages;
         if(createdDate != null && !createdDate.isEqual(LocalDate.parse("2000-01-01"))){
-            pages = stockMovementRepository.findAllByCreatedDate(createdDate, pageable);
+            pages = stockMovementRepository.fetchAllPageOfStockByCreatedDate(createdDate, pageable);
         } else {
-            pages = stockMovementRepository.findAll(pageable);
+            pages = stockMovementRepository.fetchAllPageOfStock(pageable);
         }
 
         List<StockMovementDto>content = pages.stream()
@@ -86,11 +87,11 @@ public class StockMovementServiceImpl implements StockMovementService {
     }
 
     private List<StockMovementDto>checkMovementStockList(LocalDate createdDate){
-        List<StockMovement>stockMovementList;
+        List<StockMovementProjection>stockMovementList;
         if(createdDate != null && !createdDate.isEqual(LocalDate.parse("2000-01-01"))){
-            stockMovementList = stockMovementRepository.findAllByCreatedDate(createdDate);
+            stockMovementList = stockMovementRepository.fetchAllStockByCreatedDate(createdDate);
         } else {
-            stockMovementList = stockMovementRepository.findAll();
+            stockMovementList = stockMovementRepository.fetchAllStock();
         }
         return stockMovementList.stream()
                 .map(stockMovementMapper::mapToDto)

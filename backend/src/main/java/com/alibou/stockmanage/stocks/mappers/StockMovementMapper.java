@@ -1,30 +1,23 @@
 package com.alibou.stockmanage.stocks.mappers;
 
-import com.alibou.stockmanage.auths.repositories.UserDetailsRepository;
-import com.alibou.stockmanage.stocks.models.StockMovement;
+import com.alibou.stockmanage.stocks.models.StockMovementProjection;
 import com.alibou.stockmanage.stocks.web.dtos.StockMovementDto;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class StockMovementMapper {
-    private final UserDetailsRepository userDetailsRepository;
 
-    @Transactional(readOnly = true)
-    public StockMovementDto mapToDto(StockMovement stockMovement){
-        var employeeDetails = userDetailsRepository.getEmployeeDetail(stockMovement.getCreatedBy()).orElseThrow(
-                () -> new EntityNotFoundException("No entity UserDetails found")
-        );
-        StockMovementDto dto = new StockMovementDto();
-        BeanUtils.copyProperties(stockMovement, dto);
-        dto.setEmployeId(stockMovement.getCreatedBy());
-        dto.setEmployeName(employeeDetails.getFullName());
-        dto.setProductId(stockMovement.getProduct().getId());
-        dto.setProductName(stockMovement.getProduct().getName());
-        return dto;
+    public StockMovementDto mapToDto(StockMovementProjection stockMovementProjection){
+        return StockMovementDto.builder()
+                .createdDate(stockMovementProjection.getStockMovement().getCreatedDate())
+                .employeId(stockMovementProjection.getStockMovement().getCreatedBy())
+                .employeName(stockMovementProjection.getUserDetails().getFullName())
+                .productId(stockMovementProjection.getStockMovement().getProduct().getId())
+                .productName(stockMovementProjection.getStockMovement().getProduct().getName())
+                .id(stockMovementProjection.getStockMovement().getId())
+                .quantity(stockMovementProjection.getStockMovement().getQuantity())
+                .reference(stockMovementProjection.getStockMovement().getReference())
+                .type(stockMovementProjection.getStockMovement().getType())
+                .build();
     }
 }

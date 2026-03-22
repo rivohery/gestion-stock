@@ -31,7 +31,7 @@ public class DashboardServiceImpl implements DashboardService {
         Long nbrProductEnAlert = productRepository.getNbrProductEnAlert();
         Long nbrSupplier = supplierRepository.count();
         Pageable pageable = PageRequest.of(0, 10, Sort.by("createdDate").descending());
-        List<StockMovementDto>lastMovementStock = stockMovementRepository.findAll(pageable)
+        List<StockMovementDto>lastMovementStock = stockMovementRepository.fetchAllPageOfStock(pageable)
                 .stream()
                 .map(stockMovementMapper::mapToDto)
                 .toList();

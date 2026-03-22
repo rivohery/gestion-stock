@@ -1,12 +1,10 @@
 package com.alibou.stockmanage.stocks.web.dtos;
 
-import com.alibou.stockmanage.products.models.Product;
 import com.alibou.stockmanage.stocks.models.TypeMovement;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
