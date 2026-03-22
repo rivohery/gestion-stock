@@ -5,6 +5,7 @@ import com.alibou.stockmanage.auths.repositories.UserDetailsRepository;
 import com.alibou.stockmanage.products.models.Product;
 import com.alibou.stockmanage.purchases.models.PurchaseOrder;
 import com.alibou.stockmanage.purchases.models.PurchaseOrderItem;
+import com.alibou.stockmanage.purchases.models.PurchaseOrderProjection;
 import com.alibou.stockmanage.purchases.web.dtos.*;
 import com.alibou.stockmanage.shared.exceptions.OperationNotPermittedException;
 import com.alibou.stockmanage.suppliers.repositories.SupplierRepository;
@@ -69,16 +70,17 @@ public class PurchaseOrderMapper {
         return purchaseOrderResponse;
     }
 
-    public PurchaseOrderMinResponse mapToPurchaseOrderMinResponse(PurchaseOrder purchaseOrder){
-        var purchaseOrderMinResponse = new PurchaseOrderMinResponse();
-        BeanUtils.copyProperties(purchaseOrder, purchaseOrderMinResponse);
-        purchaseOrderMinResponse.setEmployee(
-                userDetailsRepository.getEmployeeDetail(purchaseOrder.getCreatedBy()).get().getFullName()
-        );
-        purchaseOrderMinResponse.setSupplierName(
-                purchaseOrder.getSupplier().getName()
-        );
-        return purchaseOrderMinResponse;
+    public PurchaseOrderMinResponse mapToPurchaseOrderMinResponse(PurchaseOrderProjection purchaseOrderProjection){
+        return PurchaseOrderMinResponse.builder()
+                    .createdDate(purchaseOrderProjection.getCreatedDate())
+                    .employee(String.join(" ", purchaseOrderProjection.getFirstName(), purchaseOrderProjection.getLastName()))
+                    .invoiceNo(purchaseOrderProjection.getInvoiceNo())
+                    .receiveDate(purchaseOrderProjection.getReceiveDate())
+                    .status(purchaseOrderProjection.getStatus())
+                    .totalAmounts(purchaseOrderProjection.getTotalAmounts())
+                    .id(purchaseOrderProjection.getId())
+                    .supplierName(purchaseOrderProjection.getSupplierName())
+                    .build();
     }
 
     public PurchaseOrderItemResponse mapToPurchaseOrderItemResponse(PurchaseOrderItem purchaseOrderItem){

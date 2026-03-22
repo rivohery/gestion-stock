@@ -6,6 +6,7 @@ import com.alibou.stockmanage.products.web.dtos.ProductResponse;
 import com.alibou.stockmanage.purchases.mappers.PurchaseOrderMapper;
 import com.alibou.stockmanage.purchases.models.PurchaseOrder;
 import com.alibou.stockmanage.purchases.models.PurchaseOrderItem;
+import com.alibou.stockmanage.purchases.models.PurchaseOrderProjection;
 import com.alibou.stockmanage.purchases.models.PurchaseOrderStatus;
 import com.alibou.stockmanage.purchases.repositories.PurchaseOrderItemRepository;
 import com.alibou.stockmanage.purchases.repositories.PurchaseOrderRepository;
@@ -148,8 +149,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     public PageResponse<PurchaseOrderMinResponse> findAll(Pageable pageable) {
-        Page<PurchaseOrder> pages = purchaseOrderRepository.findAll(pageable);
-
+        Page<PurchaseOrderProjection> pages = purchaseOrderRepository.fetchAllPurchaseOrder(pageable);
         List<PurchaseOrderMinResponse> content = pages
                 .stream()
                 .map(purchaseOrderMapper::mapToPurchaseOrderMinResponse)
