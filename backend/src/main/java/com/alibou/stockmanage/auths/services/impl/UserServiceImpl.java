@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private final static String DEFAULT_PASSWORD = "0000";
+    private final static int PASSWORD_MIN_LENGTH = 4;
 
     @Override
     public UserDetailsResponse createUser(CreateUserRequest request) {
@@ -61,18 +62,17 @@ public class UserServiceImpl implements UserService {
                 .enabled(true)
                 .roles(new HashSet<>())
                 .build();
-        user = userRepository.save(user);
         for(Role role: roles){
             user.getRoles().add(role);
         }
-        user = userRepository.save(user);
         UserDetails userDetails = UserDetails.builder()
                 .user(user)
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .phoneNu(request.phoneNu())
                 .build();
-        userDetailsRepository.save(userDetails);
+        user.setUserDetails(userDetails);
+        user = userRepository.save(user);
         return userMapper.mapToUserDetailsResponse(user);
     }
 
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageResponse<UserDetailsResponse> findAllUser(String search, Pageable pageable) {
-        Page<User> userPages = userRepository.getAllUser(search, pageable);
+        Page<User> userPages = userRepository.fetchAllUserBySearch(search, pageable);
         return new PageResponse<>(
                 userPages.getContent()
                         .stream()
@@ -121,8 +121,14 @@ public class UserServiceImpl implements UserService {
                 throw new OperationNotPermittedException(String.format("Email already exist: %s", request.email()));
             }
             user.setEmail(request.email());
-            user = userRepository.save(user);
         }
+        if(StringUtils.isNotBlank(request.password())){
+            if(request.password().length() < PASSWORD_MIN_LENGTH){
+                throw new OperationNotPermittedException("Le mots de passe doit avoir au moins 4 caractères");
+            }
+            user.setPassword(passwordEncoder.encode(request.password()));
+        }
+        user = userRepository.save(user);
 
         if (request.firstName() != null || request.lastName() != null || request.phoneNu() != null) {
             var userDetails = userDetailsRepository.findByUser(user).orElseThrow(

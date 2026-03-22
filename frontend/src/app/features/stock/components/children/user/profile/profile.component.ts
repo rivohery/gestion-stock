@@ -59,7 +59,7 @@ export class ProfileComponent implements OnInit {
   });
   email: FormControl<string> = new FormControl('', {
     nonNullable: true,
-    validators: [Validators.required, Validators.email],
+    validators: [Validators.email],
   });
   firstName: FormControl<string> = new FormControl('', {
     nonNullable: true,
@@ -73,6 +73,10 @@ export class ProfileComponent implements OnInit {
     nonNullable: true,
     validators: [Validators.required],
   });
+  password: FormControl<string> = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.minLength(4)],
+  });
 
   profileForm: FormGroup<any> = this.fb.nonNullable.group({
     userId: this.userId,
@@ -80,6 +84,7 @@ export class ProfileComponent implements OnInit {
     firstName: this.firstName,
     lastName: this.lastName,
     phoneNu: this.phoneNu,
+    password: this.password,
   });
 
   get firstNameInvalid(): boolean {
@@ -97,6 +102,12 @@ export class ProfileComponent implements OnInit {
   }
   get phoneNuInvalid(): boolean {
     return this.phoneNu.invalid && (this.phoneNu.touched || this.phoneNu.dirty);
+  }
+
+  get passwordInvalid(): boolean {
+    return (
+      this.password.invalid && (this.password.touched || this.password.dirty)
+    );
   }
 
   constructor() {
@@ -122,7 +133,8 @@ export class ProfileComponent implements OnInit {
     if (this.authStore.userDetails()) {
       const userDetails: UserDetailsResponse =
         this.authStore.userDetails() as UserDetailsResponse;
-      this.profileForm.setValue({
+      console.log(userDetails);
+      this.profileForm.patchValue({
         userId: userDetails.userId,
         email: userDetails.email,
         firstName: userDetails.fullName.split(' ')[0],

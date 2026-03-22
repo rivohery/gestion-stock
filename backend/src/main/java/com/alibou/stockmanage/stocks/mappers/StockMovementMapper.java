@@ -1,6 +1,6 @@
 package com.alibou.stockmanage.stocks.mappers;
 
-import com.alibou.stockmanage.auths.repositories.UserRepository;
+import com.alibou.stockmanage.auths.repositories.UserDetailsRepository;
 import com.alibou.stockmanage.stocks.models.StockMovement;
 import com.alibou.stockmanage.stocks.web.dtos.StockMovementDto;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class StockMovementMapper {
-    private final UserRepository userRepository;
+    private final UserDetailsRepository userDetailsRepository;
 
     @Transactional(readOnly = true)
     public StockMovementDto mapToDto(StockMovement stockMovement){
-        var employeeDetails = userRepository.getEmployeeDetail(stockMovement.getCreatedBy()).orElseThrow(
+        var employeeDetails = userDetailsRepository.getEmployeeDetail(stockMovement.getCreatedBy()).orElseThrow(
                 () -> new EntityNotFoundException("No entity UserDetails found")
         );
         StockMovementDto dto = new StockMovementDto();

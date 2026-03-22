@@ -1,7 +1,7 @@
 package com.alibou.stockmanage.purchases.mappers;
 
 import com.alibou.stockmanage.auths.models.UserDetails;
-import com.alibou.stockmanage.auths.repositories.UserRepository;
+import com.alibou.stockmanage.auths.repositories.UserDetailsRepository;
 import com.alibou.stockmanage.products.models.Product;
 import com.alibou.stockmanage.purchases.models.PurchaseOrder;
 import com.alibou.stockmanage.purchases.models.PurchaseOrderItem;
@@ -14,7 +14,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 public class PurchaseOrderMapper {
     private final SupplierRepository supplierRepository;
 
-    private final UserRepository userRepository;
+    private final UserDetailsRepository userDetailsRepository;
 
     public PurchaseOrderItem mapToPurchaseOrderItem(
           @NonNull PurchaseOrderItemRequest request,
@@ -50,7 +49,7 @@ public class PurchaseOrderMapper {
     }
 
     public PurchaseOrderResponse mapToResponse(PurchaseOrder purchaseOrder){
-        Optional<UserDetails> optional = userRepository.getEmployeeDetail(purchaseOrder.getCreatedBy());
+        Optional<UserDetails> optional = userDetailsRepository.getEmployeeDetail(purchaseOrder.getCreatedBy());
         if(optional.isEmpty()){
             throw new OperationNotPermittedException("UserDetails object is null");
         }
@@ -74,7 +73,7 @@ public class PurchaseOrderMapper {
         var purchaseOrderMinResponse = new PurchaseOrderMinResponse();
         BeanUtils.copyProperties(purchaseOrder, purchaseOrderMinResponse);
         purchaseOrderMinResponse.setEmployee(
-                userRepository.getEmployeeDetail(purchaseOrder.getCreatedBy()).get().getFullName()
+                userDetailsRepository.getEmployeeDetail(purchaseOrder.getCreatedBy()).get().getFullName()
         );
         purchaseOrderMinResponse.setSupplierName(
                 purchaseOrder.getSupplier().getName()

@@ -1,7 +1,7 @@
 package com.alibou.stockmanage.sales.mappers;
 
 import com.alibou.stockmanage.auths.models.UserDetails;
-import com.alibou.stockmanage.auths.repositories.UserRepository;
+import com.alibou.stockmanage.auths.repositories.UserDetailsRepository;
 import com.alibou.stockmanage.products.repositories.ProductRepository;
 import com.alibou.stockmanage.sales.models.BillOrder;
 import com.alibou.stockmanage.sales.models.BillOrderItem;
@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BillOrderMapper {
 
-    private final UserRepository userRepository;
+    private final UserDetailsRepository userDetailsRepository;
 
     private final ProductRepository productRepository;
 
     public BillOrderResponse mapToBillOrderResponse(BillOrder billOrder){
-        UserDetails userDetails = userRepository.getEmployeeDetail(billOrder.getCreatedBy()).orElseThrow(
+        UserDetails userDetails = userDetailsRepository.getEmployeeDetail(billOrder.getCreatedBy()).orElseThrow(
                 () -> new EntityNotFoundException(String.format("No entity UserDetails found with user of Id: %s", billOrder.getCreatedBy()))
         );
         BillOrderResponse billOrderResponse = new BillOrderResponse();

@@ -2,12 +2,15 @@ package com.alibou.stockmanage.auths.mapper.impl;
 
 import com.alibou.stockmanage.auths.mapper.UserMapper;
 import com.alibou.stockmanage.auths.models.User;
+import com.alibou.stockmanage.auths.models.UserDetails;
 import com.alibou.stockmanage.auths.repositories.UserDetailsRepository;
 import com.alibou.stockmanage.auths.web.dtos.UserDetailsResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +25,15 @@ public class UserMapperImpl implements UserMapper {
             log.info("User Object is null");
             return null;
         }
-        var userDetails = userDetailsRepository.findByUser(user).orElseThrow(
-                () -> new EntityNotFoundException(String.format("No object UserDetails found with userId: %s", user.getId()))
-        );
+        UserDetails userDetails;
+        if(Objects.isNull(user.getUserDetails())){
+            userDetails = userDetailsRepository.findByUser(user).orElseThrow(
+                    () -> new EntityNotFoundException(String.format("No object UserDetails found with userId: %s", user.getId()))
+            );
+            log.info("UserDetails is null");
+        } else {
+            userDetails = user.getUserDetails();
+        }
         return UserDetailsResponse.builder()
                 .userId(user.getId())
                 .email(user.getEmail())

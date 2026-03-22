@@ -8,10 +8,10 @@
     ></app-image-upload>
   </div>
   <div class="w-full flex flex-col gap-5">
-    <h1 class="flex items-center justify-start gap-3 text-2xl text-bold">
+    <h3 class="text-lg font-semibold mb-4 text-gray-700">
       <mat-icon>infos</mat-icon>
-      Profile utilisateur
-    </h1>
+      Information utilisateur
+    </h3>
     <form
       class="w-full flex flex-col gap-4"
       [formGroup]="profileForm"
@@ -26,6 +26,7 @@
               placeholder="Entrer votre nom"
               formControlName="firstName"
             />
+            <mat-icon matSuffix>badge</mat-icon>
             <mat-error *ngIf="firstNameInvalid">
               <span *ngxControlError="firstName; track: 'required'"
                 >Champ nom est réquis</span
@@ -39,21 +40,40 @@
               placeholder="Entrer votre prénom"
               formControlName="lastName"
             />
+            <mat-icon matSuffix>badge</mat-icon>
             <mat-error *ngIf="lastNameInvalid">
               <span *ngxControlError="lastName; track: 'required'"
                 >Champ prénom est réquis</span
               >
             </mat-error>
           </mat-form-field>
+          <mat-form-field class="flex-1">
+            <mat-label>Tél</mat-label>
+            <input
+              matInput
+              placeholder="Votre numéros de télephone"
+              formControlName="phoneNu"
+            />
+            <mat-icon matSuffix>badge</mat-icon>
+            <mat-error *ngIf="phoneNuInvalid">
+              <span *ngxControlError="phoneNu; track: 'required'"
+                >Numéros de téléphone est réquis</span
+              >
+            </mat-error>
+          </mat-form-field>
         </div>
+
         <div class="w-full flex items-center justify-center gap-3">
           <mat-form-field class="flex-1">
             <mat-label>Email</mat-label>
             <input
               matInput
-              placeholder="Entrer votre adresse email"
+              type="email"
+              placeholder="nom@exemple.com"
               formControlName="email"
+              required
             />
+            <mat-icon matSuffix class="text-gray-400">email</mat-icon>
             <mat-error *ngIf="emailInvalid">
               <span *ngxControlError="email; track: 'required'"
                 >Champ email est réquis</span
@@ -63,17 +83,21 @@
               >
             </mat-error>
           </mat-form-field>
+
           <mat-form-field class="flex-1">
-            <mat-label>Numéro tél</mat-label>
+            <mat-label>Mot de passe</mat-label>
             <input
               matInput
-              placeholder="Entrer votre numéro"
-              formControlName="phoneNu"
+              type="password"
+              placeholder="****"
+              formControlName="password"
+              required
             />
-            <mat-error *ngIf="phoneNuInvalid">
-              <span *ngxControlError="phoneNu; track: 'required'"
-                >Numéro de téléphone est réquis</span
-              >
+            <mat-icon matSuffix class="text-gray-400">lock</mat-icon>
+            <mat-error *ngIf="passwordInvalid">
+              <span *ngxControlError="password; track: 'minlength'">
+                Le mots de passe doit avoir au moins 4 caractères
+              </span>
             </mat-error>
           </mat-form-field>
         </div>

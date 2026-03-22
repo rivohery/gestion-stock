@@ -1,6 +1,7 @@
 package com.alibou.stockmanage.sales.service;
 
 import com.alibou.stockmanage.auths.models.UserDetails;
+import com.alibou.stockmanage.auths.repositories.UserDetailsRepository;
 import com.alibou.stockmanage.auths.repositories.UserRepository;
 import com.alibou.stockmanage.products.models.Category;
 import com.alibou.stockmanage.products.models.Product;
@@ -57,7 +58,7 @@ public class BillOrderServiceTest {
     @MockBean
     private AuditorAware auditorAware;
     @MockBean
-    private UserRepository userRepository;
+    private UserDetailsRepository userDetailsRepository;
 
     Product product1;
     Product product2;
@@ -124,7 +125,7 @@ public class BillOrderServiceTest {
         productRepository.saveAll(Set.of(product1,product2,product3));
 
         Mockito.when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of(1L));
-        Mockito.when(userRepository.getEmployeeDetail(1l)).thenReturn(Optional.of(UserDetails.builder().fullName("BillDoe").build()));
+        Mockito.when(userDetailsRepository.getEmployeeDetail(1l)).thenReturn(Optional.of(UserDetails.builder().fullName("BillDoe").build()));
     }
     @Test
     void createBillOrder_shouldHandleInsufficientQtyException(){

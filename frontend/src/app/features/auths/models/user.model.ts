@@ -4,6 +4,7 @@ export interface UpdateUserInfoRequest {
   firstName?: string;
   lastName?: string;
   phoneNu?: string;
+  password?: string;
 }
 
 export type RoleEnum = 'ADMIN' | 'STOCK_MANAGER' | 'SALES_MANAGER' | 'VIEWER';

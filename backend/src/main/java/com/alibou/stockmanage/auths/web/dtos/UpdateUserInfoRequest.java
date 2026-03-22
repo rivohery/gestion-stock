@@ -13,6 +13,8 @@ public record UpdateUserInfoRequest(
        @Nullable
        String lastName,
        @Nullable
-       String phoneNu
+       String phoneNu,
+       @Nullable
+       String password
 ) {
 }
