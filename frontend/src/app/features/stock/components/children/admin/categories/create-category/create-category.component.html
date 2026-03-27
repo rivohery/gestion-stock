@@ -7,23 +7,25 @@
     <mat-label>Reference</mat-label>
     <input matInput formControlName="reference" placeholder="Computers" />
     <mat-icon matSuffix>badge</mat-icon>
-    <mat-error
-      *ngIf="reference.invalid && (reference.touched || reference.dirty)"
-    >
+    @if(referenceInvalid){
+    <mat-error>
       <span *ngxControlError="reference; track: 'required'"
         >Reference d'un categorie est recquis</span
       >
     </mat-error>
+    }
   </mat-form-field>
   <mat-form-field class="w-full max-w-[500px]">
     <mat-label>Nom</mat-label>
     <input matInput formControlName="name" placeholder="computers" />
     <mat-icon matSuffix>badge</mat-icon>
-    <mat-error *ngIf="name.invalid && (name.touched || name.dirty)">
+    @if(nameInvalid){
+    <mat-error>
       <span *ngxControlError="name; track: 'required'"
         >Nom d'un categorie est recquis</span
       >
     </mat-error>
+    }
   </mat-form-field>
   <div class="flex items-center flex-start w-full max-w-[500px]">
     <button

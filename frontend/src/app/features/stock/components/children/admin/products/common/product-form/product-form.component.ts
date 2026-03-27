@@ -26,7 +26,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { NgFor, NgIf } from '@angular/common';
 import { NgxControlError } from 'ngxtension/control-error';
 import { Router } from '@angular/router';
 import { SnackbarService } from '../../../../../../../../shared/services/snackbar-service';
@@ -41,8 +40,6 @@ import { SnackbarService } from '../../../../../../../../shared/services/snackba
     MatButtonModule,
     MatIconModule,
     ImageUploadComponent,
-    NgFor,
-    NgIf,
     NgxControlError,
   ],
   templateUrl: './product-form.component.html',
@@ -56,7 +53,7 @@ export class ProductFormComponent implements OnInit {
   suppliers = signal<SupplierMinResponse[]>([]);
 
   submitting = signal<boolean>(false);
-  errorMsg: string = '';
+  errorMsg = signal<string>('');
 
   currentPhoto?: string;
   isUploading: boolean = false;
@@ -144,7 +141,9 @@ export class ProductFormComponent implements OnInit {
       }
       if (this.productServcie.createProductState$().status === 'ERROR') {
         this.submitting.set(false);
-        this.errorMsg = this.productServcie.createProductState$().error || '';
+        this.errorMsg.set(
+          this.productServcie.createProductState$().error || ''
+        );
       }
     });
 
@@ -158,7 +157,9 @@ export class ProductFormComponent implements OnInit {
       }
       if (this.productServcie.updateProductState$().status === 'ERROR') {
         this.submitting.set(false);
-        this.errorMsg = this.productServcie.updateProductState$().error || '';
+        this.errorMsg.set(
+          this.productServcie.updateProductState$().error || ''
+        );
       }
     });
   }

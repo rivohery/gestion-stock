@@ -1,19 +1,18 @@
 <div class="flex flex-col gap-7">
+  @if(editProduct){
   <app-image-upload
-    *ngIf="editProduct"
     [image]="currentPhoto"
     [isUploading]="isUploading"
     (imageUploadEvent)="uploadImageProduct($event)"
   ></app-image-upload>
-  @if(!editProduct){
-  <h1 class="text-2xl font-semibold text-gray-700 gap-2">
-    <mat-icon>add</mat-icon>
-    Ajouter produit
-  </h1>
-  }@else {
   <h1 class="text-2xl font-semibold text-gray-700 gap-2">
     <mat-icon>edit</mat-icon>
     Editer produit
+  </h1>
+  } @else {
+  <h1 class="text-2xl font-semibold text-gray-700 gap-2">
+    <mat-icon>add</mat-icon>
+    Ajouter produit
   </h1>
   }
   <form
@@ -26,21 +25,25 @@
         <mat-label>Code</mat-label>
         <input matInput formControlName="code" placeholder="RF-1234" />
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error *ngIf="code.invalid && (code.touched || code.dirty)">
+        @if(code.invalid && (code.touched || code.dirty)){
+        <mat-error>
           <span *ngxControlError="code; track: 'required'"
             >Le code produit est recquis</span
           >
         </mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Nom</mat-label>
         <input matInput formControlName="name" placeholder="computer" />
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error *ngIf="name.invalid && (name.touched || name.dirty)">
+        @if(name.invalid && (name.touched || name.dirty)){
+        <mat-error>
           <span *ngxControlError="name; track: 'required'"
             >Le nom produit est recquis</span
           >
         </mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Unité</mat-label>
@@ -53,85 +56,86 @@
         <mat-label>Prix d'achat</mat-label>
         <input matInput formControlName="costPrice" placeholder="100.0" />
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error
-          *ngIf="costPrice.invalid && (costPrice.touched || costPrice.dirty)"
-        >
+        @if(costPrice.invalid && (costPrice.touched || costPrice.dirty)){
+        <mat-error>
           <span *ngxControlError="costPrice; track: 'required'"
             >Le prix d'achat est recquis</span
           >
         </mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Prix de vente</mat-label>
         <input matInput formControlName="salesPrice" placeholder="150.0" />
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error
-          *ngIf="salesPrice.invalid && (salesPrice.touched || salesPrice.dirty)"
-        >
+        @if(salesPrice.invalid && (salesPrice.touched || salesPrice.dirty)){
+        <mat-error>
           <span *ngxControlError="salesPrice; track: 'required'"
             >Le prix de vente est recquis</span
           >
         </mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Stock alerte</mat-label>
         <input matInput formControlName="alertStock" placeholder="150.0" />
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error
-          *ngIf="alertStock.invalid && (alertStock.touched || alertStock.dirty)"
-        >
+        @if(alertStock.invalid && (alertStock.touched || alertStock.dirty)){
+        <mat-error>
           <span *ngxControlError="alertStock; track: 'required'"
             >Le stock alerte est recquis</span
           >
         </mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <mat-form-field class="w-full">
         <mat-label>Categorie</mat-label>
         <mat-select formControlName="categoryId">
-          <mat-option
-            *ngFor="let category of categories()"
-            [value]="category.id"
-          >
+          @for(category of categories();track category.id){
+          <mat-option [value]="category.id">
             {{ category.name }}
           </mat-option>
+          }
         </mat-select>
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error
-          *ngIf="categoryId.invalid && (categoryId.touched || categoryId.dirty)"
-        >
+        @if(categoryId.invalid && (categoryId.touched || categoryId.dirty)){
+        <mat-error>
           <span *ngxControlError="categoryId; track: 'required'"
             >Le categorie est recquis</span
           >
         </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field class="w-full">
         <mat-label>Fournisseur</mat-label>
         <mat-select formControlName="supplierId">
-          <mat-option
-            *ngFor="let supplier of suppliers()"
-            [value]="supplier.id"
-          >
+          @for(supplier of suppliers();track supplier.id){
+          <mat-option [value]="supplier.id">
             {{ supplier.name }}
           </mat-option>
+          }
         </mat-select>
         <mat-icon matSuffix>badge</mat-icon>
-        <mat-error
-          *ngIf="supplierId.invalid && (supplierId.touched || supplierId.dirty)"
-        >
+        @if(supplierId.invalid && (supplierId.touched || supplierId.dirty)){
+        <mat-error>
           <span *ngxControlError="supplierId; track: 'required'"
             >Le fournisseur est recquis</span
           >
         </mat-error>
+        }
       </mat-form-field>
     </div>
 
     <div class="w-full flex items-center justify-end gap-3">
       <button mat-flat-button color="primary" type="submit">
-        <span *ngIf="submitting()">Loading...</span>
-        <span *ngIf="!submitting()">Envoyer</span>
+        @if(submitting()){
+        <span>Loading...</span>
+        } @else {
+        <span>Envoyer</span>
+        }
       </button>
       <button
         class="bg-slate-600 text-white rounded-3xl p-2 hover:bg-slate-700 w-[120px]"

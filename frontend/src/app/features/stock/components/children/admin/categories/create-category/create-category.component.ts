@@ -12,7 +12,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { injectCategoryStore } from '../../../../../../../core/store/category/category.facade';
 import { NgxControlError } from 'ngxtension/control-error';
-import { NgIf } from '@angular/common';
 import { Category } from '../../../../../models/product.model';
 import { SnackbarService } from '../../../../../../../shared/services/snackbar-service';
 
@@ -25,7 +24,6 @@ import { SnackbarService } from '../../../../../../../shared/services/snackbar-s
     FormsModule,
     ReactiveFormsModule,
     NgxControlError,
-    NgIf,
   ],
   templateUrl: './create-category.component.html',
   styleUrl: './create-category.component.css',
@@ -48,6 +46,16 @@ export class CreateCategoryComponent {
     reference: this.reference,
     name: this.name,
   });
+
+  get referenceInvalid(): boolean {
+    return (
+      this.reference.invalid && (this.reference.touched || this.reference.dirty)
+    );
+  }
+
+  get nameInvalid(): boolean {
+    return this.name.invalid && (this.name.touched || this.name.dirty);
+  }
 
   constructor() {
     effect(() => {

@@ -13,7 +13,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { UserDetailsResponse } from '../../../../../auths/models/auths.model';
-import { NgIf } from '@angular/common';
 import { NgxControlError } from 'ngxtension/control-error';
 import { UserService } from '../../../../../auths/services/user.service';
 import { UpdateUserInfoRequest } from '../../../../../auths/models/user.model';
@@ -34,7 +33,6 @@ import { environment } from '../../../../../../../environments/environment.dev';
     MatCardModule,
     FormsModule,
     ReactiveFormsModule,
-    NgIf,
     NgxControlError,
     ImageUploadComponent,
   ],
@@ -49,7 +47,7 @@ export class ProfileComponent implements OnInit {
   router = inject(Router);
 
   uploadProgress: number = 0;
-  isUploading: boolean = false;
+  isUploading = signal<boolean>(false);
   loading = signal<boolean>(false);
   image: string = '';
 
@@ -174,15 +172,16 @@ export class ProfileComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('userId', '' + this.authStore.userDetails()?.userId);
-    this.isUploading = true;
+    this.isUploading.set(true);
     this.userService.uploadImage(formData).subscribe({
       next: (resp) => {
-        this.isUploading = false;
         this.snackbar.openSnackBar(resp?.message || '', 'success');
       },
       error: (err) => {
-        this.isUploading = false;
         this.snackbar.openSnackBar(err.message, 'error');
+      },
+      complete: () => {
+        this.isUploading.set(false);
       },
     });
   }

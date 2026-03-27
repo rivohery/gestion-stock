@@ -5,7 +5,6 @@ import { ProductResponse } from '../../../../../models/product.model';
 import { SnackbarService } from '../../../../../../../shared/services/snackbar-service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { NgIf } from '@angular/common';
 import { PaginationComponent } from '../../../../../../../shared/components/pagination/pagination.component';
 import {
   MatDialog,
@@ -25,7 +24,6 @@ import { Router } from '@angular/router';
     SearchComponent,
     PaginationComponent,
     MessageBoxComponent,
-    NgIf,
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css',
@@ -41,24 +39,28 @@ export class ProductListComponent implements OnInit {
   size: number = 6;
 
   loading = signal<boolean>(false);
-  errorMsg: string = '';
+  errorMsg = signal<string>('');
   deletingId: number = -1;
 
-  productList: ProductResponse[] = [];
-  totalPages: number = 0;
+  productList = signal<ProductResponse[]>([]);
+  totalPages = signal<number>(0);
 
   constructor() {
     effect(() => {
       if (this.productService.findAllProductState$().status === 'OK') {
         this.loading.set(false);
-        this.productList =
-          this.productService.findAllProductState$().value?.content || [];
-        this.totalPages =
-          this.productService.findAllProductState$().value?.totalPages || 0;
+        this.productList.set(
+          this.productService.findAllProductState$().value?.content || []
+        );
+        this.totalPages.set(
+          this.productService.findAllProductState$().value?.totalPages || 0
+        );
       }
       if (this.productService.findAllProductState$().status === 'ERROR') {
         this.loading.set(false);
-        this.errorMsg = this.productService.findAllProductState$().error || '';
+        this.errorMsg.set(
+          this.productService.findAllProductState$().error || ''
+        );
       }
     });
   }
@@ -121,7 +123,7 @@ export class ProductListComponent implements OnInit {
               this.loadAllProduct();
             },
             error: (err) => {
-              this.errorMsg = err.message || '';
+              this.errorMsg.set(err.message);
               this.deletingId = -1;
             },
           });
@@ -131,6 +133,6 @@ export class ProductListComponent implements OnInit {
   }
 
   close(): void {
-    this.errorMsg = '';
+    this.errorMsg.set('');
   }
 }

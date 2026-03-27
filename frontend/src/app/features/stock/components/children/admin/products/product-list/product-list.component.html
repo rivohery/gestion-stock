@@ -13,14 +13,14 @@
       </button>
     </div>
 
+    @if(errorMsg()){
     <app-message-box
       [type]="'error'"
-      [message]="errorMsg"
+      [message]="errorMsg()"
       (closeEvent)="close()"
-      *ngIf="errorMsg"
     ></app-message-box>
-
-    <div class="overflow-x-auto flex flex-col gap-4" *ngIf="productList.length">
+    } @if(productList()){
+    <div class="overflow-x-auto flex flex-col gap-4">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
@@ -62,7 +62,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          @for(product of productList;track product.id){
+          @for(product of productList();track product.id){
           <tr>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="flex items-center justify-start gap-3">
@@ -126,16 +126,23 @@
               </span>
             </td>
           </tr>
+          } @empty {
+          <tr colspan="7" class="text-center text-gray-500">
+            No product registered
+          </tr>
           }
         </tbody>
       </table>
+      @if(totalPages() > 0){
       <div class="flex items-center justify-center">
         <app-pagination
-          [totalPages]="totalPages"
+          [totalPages]="totalPages()"
           [currentPage]="currentPage"
           (pageChanged)="goToPage($event)"
         ></app-pagination>
       </div>
+      }
     </div>
+    }
   </div>
 </div>
