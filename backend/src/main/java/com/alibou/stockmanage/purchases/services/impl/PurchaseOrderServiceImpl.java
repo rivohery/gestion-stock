@@ -32,7 +32,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private final int INVOICE_NO_LENGTH = 6;
     private final PurchaseOrderRepository purchaseOrderRepository;
@@ -54,70 +53,77 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
+    @Transactional
     public PurchaseOrderResponse createPurchaseOrder(PurchaseOrderRequest request) {
         if (request.items() == null || request.items().size() == 0) {
             throw new OperationNotPermittedException("Your purchase order items is empty or null");
         }
         PurchaseOrder purchaseOrder = purchaseOrderMapper.mapToEntity(request);
         purchaseOrder.setStatus(PurchaseOrderStatus.PENDING);
-        purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
 
         for (PurchaseOrderItemRequest item : request.items()) {
-            var product = productRepository.findById(item.productId()).orElseThrow(
-                    () -> new EntityNotFoundException(String.format("Product of ID %s is not found", item.productId()))
-            );
-            var purchaseOrderItem = purchaseOrderMapper.mapToPurchaseOrderItem(item, purchaseOrder, product);
-            purchaseOrderItem = purchaseOrderItemRepository.save(purchaseOrderItem);
-            purchaseOrder.getPurchaseOrderItems().add(purchaseOrderItem);
+            preparePurchaseOrderItem(item, purchaseOrder);
         }
+        purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
         return purchaseOrderMapper.mapToResponse(purchaseOrder);
     }
 
+    private void preparePurchaseOrderItem(PurchaseOrderItemRequest item, PurchaseOrder purchaseOrder){
+        var product = productRepository.findById(item.productId()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Product of ID %s is not found", item.productId()))
+        );
+        var purchaseOrderItem = purchaseOrderMapper.mapToPurchaseOrderItem(item, purchaseOrder, product);
+        purchaseOrder.getPurchaseOrderItems().add(purchaseOrderItem);
+    }
+
     @Override
+    @Transactional
     public PurchaseOrder updateStatusOfPurchaseOrder(UpdateStatusPurchaseOrderRequest request) {
         var purchaseOrder = purchaseOrderRepository.findById(request.purchaseOrderId()).orElseThrow(
                 () -> new EntityNotFoundException(String.format("No Purchase order found with ID: %s", request.purchaseOrderId()))
         );
         switch (request.status()) {
-            case PENDING:
-                break;
-            case CANCELLED:
-                if (purchaseOrder.getStatus() != PurchaseOrderStatus.PENDING) {
-                    throw new OperationNotPermittedException("You can cancel the order only if it is PENDING");
-                }
-                purchaseOrder.setStatus(PurchaseOrderStatus.CANCELLED);
-                purchaseOrderRepository.save(purchaseOrder);
-                break;
-            case CONFIRMED:
-                if (purchaseOrder.getStatus() != PurchaseOrderStatus.PENDING) {
-                    throw new OperationNotPermittedException("Status of order is already PAYED | DELIVERED | CANCELED");
-                }
-                purchaseOrder.setStatus(PurchaseOrderStatus.CONFIRMED);
-                purchaseOrderRepository.save(purchaseOrder);
-
-                for (PurchaseOrderItem item : purchaseOrder.getPurchaseOrderItems()) {
-                    //Update qty stock only PurchaseOrderStatus === PurchaseOrderStatus.CONFIRMED
-                    var product = productRepository.findById(item.getProduct().getId()).orElseThrow(
-                            () -> new EntityNotFoundException(String.format("Product of ID %s is not found", item.getProduct().getId()))
-                    );
-                    product.setQtyStock(product.getQtyStock() + item.getQuantity());
-                    product = productRepository.save(product);
-
-                    //Save stock movement only PurchaseOrderStatus === PurchaseOrderStatus.CONFIRMED
-                    saveMovementStock(product, item.getQuantity(), purchaseOrder.getInvoiceNo());
-                }
-                break;
-            default://DELIVERED
-                if (purchaseOrder.getStatus() == PurchaseOrderStatus.PENDING
-                        || purchaseOrder.getStatus() == PurchaseOrderStatus.CANCELLED
-                ) {
-                    throw new OperationNotPermittedException("The status of order is PENDING or CANCELED");
-                }
-                purchaseOrder.setStatus(request.status());
-                purchaseOrderRepository.save(purchaseOrder);
-                break;
+            case CANCELLED -> handleCancellation(purchaseOrder);
+            case CONFIRMED -> handleConfirmation(purchaseOrder);
+            default -> handleOtherStatus(purchaseOrder, request.status());
         }
-        return purchaseOrder;
+        return  purchaseOrderRepository.save(purchaseOrder);
+    }
+
+    private void handleCancellation(PurchaseOrder purchaseOrder){
+        if (purchaseOrder.getStatus() != PurchaseOrderStatus.PENDING) {
+            throw new OperationNotPermittedException("You can cancel the order only if it is PENDING");
+        }
+        purchaseOrder.setStatus(PurchaseOrderStatus.CANCELLED);
+    }
+
+    private void handleConfirmation(PurchaseOrder purchaseOrder){
+        if (purchaseOrder.getStatus() != PurchaseOrderStatus.PENDING) {
+            throw new OperationNotPermittedException("Status of order is already PAYED | DELIVERED | CANCELED");
+        }
+        purchaseOrder.setStatus(PurchaseOrderStatus.CONFIRMED);
+
+        purchaseOrder.getPurchaseOrderItems().forEach(this::processStockIncrease);
+    }
+
+    private void handleOtherStatus(PurchaseOrder purchaseOrder, PurchaseOrderStatus newStatus){
+        if (purchaseOrder.getStatus() == PurchaseOrderStatus.PENDING
+                || purchaseOrder.getStatus() == PurchaseOrderStatus.CANCELLED
+        ) {
+            throw new OperationNotPermittedException("The status of order is PENDING or CANCELED");
+        }
+        purchaseOrder.setStatus(newStatus);
+    }
+
+    private void processStockIncrease(PurchaseOrderItem item){
+        var product = productRepository.findById(item.getProduct().getId()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Product of ID %s is not found", item.getProduct().getId()))
+        );
+        product.setQtyStock(product.getQtyStock() + item.getQuantity());
+        product = productRepository.save(product);
+
+        //Save stock movement only PurchaseOrderStatus === PurchaseOrderStatus.CONFIRMED
+        saveMovementStock(product, item.getQuantity(), item.getPurchaseOrder().getInvoiceNo());
     }
 
     private void saveMovementStock(Product product, int quantity, String invoiceNo) {
